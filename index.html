@@ -735,6 +735,7 @@
       <p class="edu"><span class="qual"><span class="deg">MSc Financial Technology</span> (1st Class Hons.), University of Exeter</span> &middot; <span class="qual"><span class="deg">BSc Financial Mathematics</span>, University of Kent</span></p>
       <div class="contact-row">
         <a href="https://github.com/MoonBoi9001">GitHub</a>
+        <a class="linkedin-link" href="#">LinkedIn</a>
         <button class="email-reveal" type="button" title="Click to reveal">Email</button>
       </div>
     </header>
@@ -980,6 +981,7 @@
       <p class="section-note">Something I could help with? I'd like to hear about it.</p>
       <div class="contact-row">
         <a href="https://github.com/MoonBoi9001">GitHub</a>
+        <a class="linkedin-link" href="#">LinkedIn</a>
         <button class="email-reveal" type="button" title="Click to reveal">Email</button>
       </div>
     </section>
@@ -1045,6 +1047,9 @@
         star.addEventListener('animationiteration', () => wander(star));
         field.appendChild(star);
       }
+      document.querySelectorAll('.linkedin-link').forEach((a) => {
+        a.href = 'https://' + ['www', 'linkedin', 'com'].join('.') + '/in/' + ['-samuel', 'metcalfe'].join('');
+      });
       document.querySelectorAll('a[href^="http"]').forEach(a => {
         a.target = '_blank';
         a.rel = 'noopener';
