@@ -100,6 +100,16 @@
     animation: rise 2.2s cubic-bezier(.22,1,.36,1) both;
     transition: box-shadow .6s, transform .6s;
   }
+  .moon { overflow: hidden; }
+  .moon-shade {
+    position: absolute;
+    inset: -3%;
+    border-radius: 50%;
+    background: rgba(8, 10, 20, .82);
+    filter: blur(2px);
+    z-index: 1;
+    pointer-events: none;
+  }
   .moon.super {
     transform: scale(1.12);
     box-shadow:
@@ -1025,6 +1035,19 @@
           window.open(link.href, '_blank', 'noopener');
         });
       });
+      // shade the moon to tonight's actual phase (full moon stays clean)
+      (() => {
+        const SYNODIC = 29.530588853;
+        const NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+        const f = (((Date.now() - NEW_MOON) / 86400000) % SYNODIC) / SYNODIC;
+        const tx = f < .5 ? -(f / .5) * 100 : ((1 - f) / .5) * 100;
+        if (Math.abs(tx) < 90) {
+          const shade = document.createElement('div');
+          shade.className = 'moon-shade';
+          shade.style.transform = 'translateX(' + tx.toFixed(1) + '%)';
+          moon.appendChild(shade);
+        }
+      })();
       const navName = document.querySelector('.nav-name');
       let landing = false;
       navName.addEventListener('click', () => {
