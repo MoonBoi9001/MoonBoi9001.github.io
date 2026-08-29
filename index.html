@@ -651,9 +651,13 @@
     to   { transform: translateY(0);    opacity: 1; }
   }
 
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.shown { opacity: 1; transform: none; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .star { opacity: .5; }
+    .reveal { opacity: 1 !important; transform: none !important; }
   }
 </style>
 </head>
@@ -1064,6 +1068,20 @@
         });
         emailBtn.replaceWith(link, copy);
       }, { once: true });
+      if (!calm && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); }
+          });
+        }, { threshold: .12 });
+        document.querySelectorAll('.card, .featured, .elsewhere-list li, .section-head, .section-note, .chips')
+          .forEach((el) => {
+            if (el.getBoundingClientRect().top > innerHeight * .92) {
+              el.classList.add('reveal');
+              io.observe(el);
+            }
+          });
+      }
       console.log('%cmoonboi9001.github.io', 'color:#d9b96c;font-family:monospace');
       console.log('Nothing hidden down here. The moon, though... try clicking it. Nine times.');
     })();
