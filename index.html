@@ -439,6 +439,47 @@
     0%, 55% { transform: translateX(-80%); }
     85%, 100% { transform: translateX(80%); }
   }
+  .card { position: relative; }
+  .egg {
+    position: absolute;
+    right: 1.1rem;
+    bottom: .9rem;
+    width: 44px;
+    height: 34px;
+    opacity: 0;
+    transition: opacity .6s ease;
+    pointer-events: none;
+  }
+  .card:hover .egg { opacity: 1; transition-delay: 2.2s; }
+  .egg * { transform-box: fill-box; transform-origin: center; }
+  .e-b1, .e-b2, .e-b3 { transform-origin: center bottom; animation: egg-rise 1.4s ease-in-out infinite alternate; }
+  .e-b2 { animation-delay: .25s; }
+  .e-b3 { animation-delay: .5s; }
+  .e-coin { animation: egg-drop 1.8s ease-in infinite; }
+  .e-check, .e-check2 { animation: egg-draw 2.2s ease infinite; }
+  .e-mail { animation: egg-slide 2.4s ease infinite; }
+  .e-t1 { animation: egg-pop 2.4s infinite; }
+  .e-t2 { animation: egg-pop 2.4s infinite .3s; }
+  .e-t3 { animation: egg-pop 2.4s infinite .6s; }
+  .e-lb { animation: egg-join-l 1.6s ease infinite alternate; }
+  .e-rb { animation: egg-join-r 1.6s ease infinite alternate; }
+  .e-ln { animation: egg-blink 1.6s ease infinite; }
+  .e-l1 { animation: egg-blink 1.1s infinite; }
+  .e-l2 { animation: egg-blink 1.7s infinite .3s; }
+  .e-l3 { animation: egg-blink 1.4s infinite .6s; }
+  .e-l4 { animation: egg-blink .9s infinite .2s; }
+  .e-shield { animation: egg-pulse 1.8s ease-in-out infinite alternate; }
+  .e-hop { animation: egg-hop 2.6s ease-in-out infinite; }
+  @keyframes egg-rise { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+  @keyframes egg-drop { 0% { transform: translateY(-12px); opacity: 0; } 25% { opacity: 1; } 75% { transform: translateY(9px); opacity: 1; } 100% { transform: translateY(11px); opacity: 0; } }
+  @keyframes egg-draw { 0% { stroke-dashoffset: 20; } 55%, 100% { stroke-dashoffset: 0; } }
+  @keyframes egg-slide { 0% { transform: translateX(16px); opacity: 0; } 35% { transform: translateX(0); opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes egg-pop { 0%, 15% { opacity: 0; transform: scale(.5); } 35%, 75% { opacity: 1; transform: scale(1); } 95%, 100% { opacity: 0; } }
+  @keyframes egg-join-l { from { transform: translateX(-5px); } to { transform: translateX(0); } }
+  @keyframes egg-join-r { from { transform: translateX(5px); } to { transform: translateX(0); } }
+  @keyframes egg-blink { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+  @keyframes egg-pulse { from { transform: scale(1); } to { transform: scale(1.07); } }
+  @keyframes egg-hop { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(14px, -12px); } 50% { transform: translate(28px, 0); } 75% { transform: translate(14px, -12px); } }
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
@@ -682,6 +723,7 @@
             quiet ones. Selection then blends economic security, price, latency, uptime and
             success rate, preferring indexers already synced so data is queryable sooner.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><g fill="#d9b96c"><rect class="e-b1" x="6" y="14" width="7" height="16" rx="1.5"/><rect class="e-b2" x="18" y="6" width="7" height="24" rx="1.5"/><rect class="e-b3" x="30" y="20" width="7" height="10" rx="1.5"/></g></svg>
         </article>
 
         <article class="card card-rust">
@@ -699,6 +741,7 @@
             or quietly stops indexing. Moved payments from off-chain signed vouchers to on-chain
             escrow, coordinated across 4 repositories.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><rect x="12" y="26" width="20" height="4" rx="2" fill="#c2c0b8" opacity=".45"/><circle class="e-coin" cx="22" cy="10" r="6" fill="#e0916a"/></svg>
         </article>
 
         <article class="card card-python">
@@ -714,6 +757,7 @@
             thresholds for response status, latency and freshness. Took it to production with RPC
             failover, gas bounds, a circuit breaker, and Slack and Opsgenie alerting.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><circle cx="22" cy="17" r="12" fill="none" stroke="#9db8e8" stroke-width="2" opacity=".5"/><path class="e-check" d="M15 17.5 20 22.5 29 12.5" fill="none" stroke="#9db8e8" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="20" stroke-dashoffset="20"/></svg>
         </article>
 
 
@@ -730,6 +774,7 @@
             and accepted only if that signer is on the protocol's on-chain list of approved
             payers, rather than trusting a sender field anyone could fill in.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><g class="e-mail"><rect x="10" y="9" width="24" height="16" rx="2" fill="none" stroke="#e0916a" stroke-width="2"/><path d="M10 11 22 19 34 11" fill="none" stroke="#e0916a" stroke-width="2"/></g></svg>
         </article>
 
         <article class="card card-ts">
@@ -744,6 +789,7 @@
             dropped final payments, allocations left indexing unpaid, and live agreements
             destroyed by closing a stale allocation.
           </p>
+          <svg class="egg" viewBox="0 0 48 34" fill="none" stroke="#6ea8dc" stroke-width="2.4" stroke-linecap="round"><path class="e-t1" d="M5 18 9 22 15 13"/><path class="e-t2" d="M21 18 25 22 31 13"/><path class="e-t3" d="M37 18 41 22 47 13"/></svg>
         </article>
 
         <article class="card card-asc">
@@ -758,6 +804,7 @@
             endpoint, so the paying service can reconcile and backfill without calling contracts
             over RPC on every catch-up pass.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><rect class="e-lb" x="6" y="12" width="10" height="10" rx="2" fill="#a99ae6"/><rect class="e-rb" x="28" y="12" width="10" height="10" rx="2" fill="#a99ae6"/><line class="e-ln" x1="16" y1="17" x2="28" y2="17" stroke="#a99ae6" stroke-width="2"/></svg>
         </article>
 
         <article class="card card-infra">
@@ -777,6 +824,7 @@
             <span>Graph indexer</span><span>Ethereum archive</span><span>Sepolia</span>
             <span>Arbitrum</span><span>Arbitrum Sepolia</span><span>Avalanche</span><span>Bitcoin</span>
           </div>
+          <svg class="egg" viewBox="0 0 44 34"><rect x="8" y="7" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><rect x="8" y="19" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><circle class="e-l1" cx="13" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l2" cx="18" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l3" cx="13" cy="23" r="1.6" fill="#7fd6bb"/><circle class="e-l4" cx="18" cy="23" r="1.6" fill="#7fd6bb"/></svg>
         </article>
 
         <article class="card card-sol">
@@ -794,6 +842,7 @@
             components of <a href="https://github.com/edgeandnode/dipper">dipper</a> and the
             <a href="https://github.com/graphprotocol/rewards-eligibility-oracle">rewards eligibility oracle</a>.
           </p>
+          <svg class="egg" viewBox="0 0 44 34"><path class="e-shield" d="M22 3 32 7v9c0 7-5 11-10 13-5-2-10-6-10-13V7Z" fill="none" stroke="#a99ae6" stroke-width="2"/><path class="e-check2" d="M17 16 21 20 28 11" fill="none" stroke="#a99ae6" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="18" stroke-dashoffset="18"/></svg>
         </article>
 
         <article class="card card-ccip">
@@ -811,6 +860,7 @@
             low or something looks anomalous. Also scoped the smart contracts for delegating
             GRT across chains.
           </p>
+          <svg class="egg" viewBox="0 0 48 34"><circle cx="10" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle cx="38" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle class="e-hop" cx="10" cy="24" r="3" fill="#7ab8e0"/></svg>
         </article>
       </div>
     </section>
