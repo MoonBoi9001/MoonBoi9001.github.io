@@ -859,7 +859,8 @@
           <p>
             I run a Graph Protocol indexer on mainnet and testnet, operating the same software
             I spent 2.5 years building payment rails for, behind a fleet of chain nodes fronted
-            by a load balancer I wrote in Go, plus validators on crypto networks. It all runs
+            by a load balancer I wrote in Go, currently routing roughly 35 million RPC requests
+            a day, plus validators on crypto networks. It all runs
             on my own Proxmox and KVM hosts with ZFS storage and automated snapshots,
             configured through Ansible and deployed in Docker.
           </p>
@@ -949,7 +950,7 @@
       <div class="chips">
         <span class="chip-rust">Rust<span class="chip-tip">Built <a href="https://github.com/edgeandnode/dipper">dipper</a>'s agreement lifecycle and chain listener; rebuilt the proposal trust model in <a href="https://github.com/graphprotocol/indexer-rs">indexer-rs</a>.</span></span>
         <span class="chip-python">Python<span class="chip-tip">The <a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">indexer selection service</a> and the <a href="https://github.com/graphprotocol/rewards-eligibility-oracle">rewards eligibility oracle</a>, both running in production.</span></span>
-        <span class="chip-go">Go<span class="chip-tip">A load balancer fronting my own EVM node fleet. Private repo; demo on request.</span></span>
+        <span class="chip-go">Go<span class="chip-tip">A load balancer fronting my own EVM node fleet, routing roughly 35 million RPC requests a day. Private repo; demo on request.</span></span>
         <span class="chip-ts">TypeScript<span class="chip-tip">Parallel on-chain acceptance and 3 payment-loss fixes in <a href="https://github.com/graphprotocol/indexer">the indexer agent</a>.</span></span>
         <span class="chip-sql">SQL<span class="chip-tip">Schema design, migrations and analytical queries across dipper and the daily selection pipeline.</span></span>
         <span class="chip-postgres">PostgreSQL<span class="chip-tip">Async persistence and schema migrations in dipper; agreement storage in indexer-rs.</span></span>
