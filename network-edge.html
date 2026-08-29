@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A hardened home network edge, from scratch</title>
+<meta name="description" content="A reference architecture for a hardened home network edge: dedicated firewall, filtered DNS, VPN-only remote access, intrusion detection and sane queueing. Example values throughout.">
+<meta name="theme-color" content="#060812">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128737;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0b0e1a;
+    --night-deep: #060812;
+    --panel: rgba(232, 230, 220, .035);
+    --edge: rgba(232, 230, 220, .13);
+    --moonlight: #e8e6dc;
+    --moonlight-dim: #c2c0b8;
+    --halo: #f5f2e4;
+    --accent: #d9b96c;
+    --ice: #9db8e8;
+    --teal: #7fd6bb;
+    --green: #86d9a2;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 112.5%; }
+  body {
+    background-color: var(--night-deep);
+    background-image: radial-gradient(ellipse 120% 60% at 70% 0%, #141a30 0%, var(--night) 45%, var(--night-deep) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 100vh;
+    color: var(--moonlight);
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .wrap {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    padding: 1.6rem 0 0;
+  }
+  .nav-name {
+    font-family: var(--mono);
+    font-size: .8rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  nav a.back { color: var(--moonlight-dim); font-size: .88rem; }
+  nav a.back:hover { color: var(--accent); text-decoration: none; }
+  header { padding-top: clamp(2.5rem, 7vh, 4.5rem); }
+  .kicker {
+    font-family: var(--mono);
+    font-size: .75rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+  h1 {
+    font-weight: 500;
+    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    color: var(--halo);
+    margin: .8rem 0 1rem;
+  }
+  .disclaimer {
+    font-size: .9rem;
+    color: var(--moonlight-dim);
+    border: 1px solid var(--edge);
+    border-left: 3px solid var(--teal);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: .9rem 1.2rem;
+    margin: 1.4rem 0 0;
+  }
+  h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--halo);
+    margin: 3rem 0 .8rem;
+  }
+  h2 .num {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: .8rem;
+    color: var(--teal);
+    letter-spacing: .15em;
+    margin-right: .7rem;
+  }
+  p { margin: 0 0 1rem; color: var(--moonlight-dim); }
+  p strong { color: var(--moonlight); font-weight: 500; }
+  pre {
+    font-family: var(--mono);
+    font-size: .8rem;
+    line-height: 1.7;
+    color: var(--moonlight);
+    background: var(--night);
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    margin: 0 0 1rem;
+  }
+  .diagram {
+    margin: 1.5rem 0;
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 1.2rem;
+  }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  footer {
+    margin-top: 5rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid rgba(232, 230, 220, .08);
+    font-family: var(--mono);
+    font-size: .7rem;
+    letter-spacing: .18em;
+    color: rgba(168, 166, 158, .55);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <span class="nav-name">MoonBoi9001</span>
+      <a class="back" href="index.html">&larr; back to home</a>
+    </nav>
+
+    <header>
+      <p class="kicker">Reference architecture</p>
+      <h1>A hardened home network edge, from scratch</h1>
+      <p>
+        Most home networks trust their ISP router to do everything: routing, DNS, Wi-Fi,
+        firewalling. This guide walks through the design of a dedicated network edge that does
+        each of those jobs deliberately: a small firewall machine that filters DNS for every
+        device, admits nobody but you, watches for intrusions, and keeps latency low even when
+        the line is saturated.
+      </p>
+      <p class="disclaimer">
+        This is a teaching build, not a description of any particular network. Every address,
+        port and name below is an example value (documentation ranges from RFC 5737 and private
+        ranges from RFC 1918). Adapt them to your own network, and treat the design decisions,
+        not the values, as the content.
+      </p>
+    </header>
+
+    <h2><span class="num">01</span>Why a dedicated edge box</h2>
+    <p>
+      The edge is the 1 place every packet must pass, which makes it the highest-leverage spot
+      in the whole network: a rule written there protects every device behind it, including the
+      smart TV that will never receive another security update. Running the firewall on its own
+      small machine, separate from whatever server you may also operate, means the security
+      boundary keeps working when the big box is being rebuilt, upgraded, or misbehaving.
+    </p>
+    <p>
+      A capable setup is a low-power PC with 2 network ports running a firewall distribution
+      (OPNsense and pfSense are the common open-source choices; everything below applies to
+      either). It can run bare-metal or as a virtual machine on a small hypervisor; if
+      virtualised, pass the network ports through to the VM so the host never bridges WAN
+      traffic itself.
+    </p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 720 300" role="img" aria-label="Network diagram: internet to modem to firewall, which serves DNS, VPN and the LAN switch with wired hosts and Wi-Fi clients behind it">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7fd6bb"/>
+          </marker>
+        </defs>
+        <style>
+          .box { fill: rgba(232,230,220,.05); stroke: rgba(232,230,220,.25); rx: 10; }
+          .hot { stroke: #7fd6bb; }
+          .lbl { fill: #e8e6dc; font: 500 14px "Roboto", sans-serif; }
+          .sub { fill: #c2c0b8; font: 400 11px "IBM Plex Mono", monospace; }
+          .flow { stroke: #7fd6bb; stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+        </style>
+        <rect class="box" x="10" y="120" width="110" height="60"/>
+        <text class="lbl" x="65" y="146" text-anchor="middle">Internet</text>
+        <text class="sub" x="65" y="164" text-anchor="middle">203.0.113.1</text>
+        <rect class="box" x="160" y="120" width="100" height="60"/>
+        <text class="lbl" x="210" y="146" text-anchor="middle">Modem</text>
+        <text class="sub" x="210" y="164" text-anchor="middle">bridge mode</text>
+        <rect class="box hot" x="300" y="105" width="150" height="90"/>
+        <text class="lbl" x="375" y="135" text-anchor="middle">Firewall</text>
+        <text class="sub" x="375" y="153" text-anchor="middle">DNS &middot; VPN &middot; IDS</text>
+        <text class="sub" x="375" y="171" text-anchor="middle">10.0.0.1</text>
+        <rect class="box" x="500" y="120" width="100" height="60"/>
+        <text class="lbl" x="550" y="146" text-anchor="middle">Switch</text>
+        <text class="sub" x="550" y="164" text-anchor="middle">10.0.0.0/24</text>
+        <rect class="box" x="630" y="40" width="80" height="50"/>
+        <text class="lbl" x="670" y="61" text-anchor="middle" font-size="12">Wired</text>
+        <text class="sub" x="670" y="77" text-anchor="middle">servers</text>
+        <rect class="box" x="630" y="125" width="80" height="50"/>
+        <text class="lbl" x="670" y="146" text-anchor="middle" font-size="12">Wi-Fi AP</text>
+        <text class="sub" x="670" y="162" text-anchor="middle">AP mode</text>
+        <rect class="box" x="630" y="210" width="80" height="50"/>
+        <text class="lbl" x="670" y="231" text-anchor="middle" font-size="12">IoT</text>
+        <text class="sub" x="670" y="247" text-anchor="middle">own VLAN</text>
+        <line class="flow" x1="120" y1="150" x2="155" y2="150"/>
+        <line class="flow" x1="260" y1="150" x2="295" y2="150"/>
+        <line class="flow" x1="450" y1="150" x2="495" y2="150"/>
+        <line class="flow" x1="600" y1="140" x2="625" y2="70"/>
+        <line class="flow" x1="600" y1="150" x2="625" y2="150"/>
+        <line class="flow" x1="600" y1="160" x2="625" y2="230"/>
+      </svg>
+    </div>
+
+    <h2><span class="num">02</span>The firewall posture</h2>
+    <p>
+      Inbound, the rule is simple: nothing. No port forwards, no management interfaces reachable
+      from the internet, no exceptions for convenience. Remote access happens over a VPN
+      (section 04), so there is nothing for an internet scanner to find.
+    </p>
+    <p>
+      Outbound deserves more thought than it usually gets. Most networks allow everything out,
+      which means a compromised device can talk to whatever it likes. A stricter posture allows
+      the protocols you actually use and logs the rest; at minimum, block outbound traffic to
+      port 53 and 853 from everything except the firewall itself, which is what makes the next
+      section enforceable.
+    </p>
+
+    <h2><span class="num">03</span>DNS you control</h2>
+    <p>
+      Run a validating, recursive resolver (Unbound is the usual choice) on the firewall
+      itself, resolving directly against the root servers rather than forwarding to your ISP or
+      a public resolver. Every device on the network gets its DNS answered, filtered and cached
+      in 1 place you control.
+    </p>
+    <p>
+      Filtering is 2 lists doing different jobs: a <strong>blocklist</strong> for ads, trackers
+      and known-malicious domains (curated aggregates exist; start with a moderate one, not the
+      most aggressive), and a <strong>threat-intelligence feed</strong> that updates faster and
+      catches active phishing and malware infrastructure. Both are just files of domains the
+      resolver answers with NXDOMAIN.
+    </p>
+    <p>
+      Filtering only works if devices cannot go around it, and modern devices try. 3 rules
+      close the detours: redirect any outbound plain DNS (port 53) to the local resolver, so
+      hard-coded resolvers like 8.8.8.8 silently get filtered answers; block DNS-over-TLS (port
+      853) outright; and put known DNS-over-HTTPS endpoints on the blocklist, since DoH hides
+      inside normal HTTPS and cannot be blocked by port. Browsers that probe for DoH fall back
+      cleanly to system DNS when the probe fails.
+    </p>
+    <pre># NAT redirect: any LAN device asking any resolver on port 53
+# gets answered by the firewall's own resolver instead
+rdr on $lan_if proto { tcp udp } from any to !10.0.0.1 port 53 -> 10.0.0.1 port 53
+
+# and DNS-over-TLS does not leave the network at all
+block out quick proto { tcp udp } from any to any port 853</pre>
+
+    <h2><span class="num">04</span>Remote access: a door only you have</h2>
+    <p>
+      A VPN terminated on the firewall replaces every port forward. WireGuard is the simplest
+      to reason about: a single UDP port, keys instead of passwords, and silence to anyone who
+      probes it without a valid key, so scanners see nothing at all. Mesh overlays built on
+      WireGuard (Tailscale and friends) trade a third-party coordination service for easier
+      multi-device setup; running one on the firewall as a <strong>subnet router</strong> gives
+      every enrolled device a route into the LAN without installing agents on each internal
+      host.
+    </p>
+    <p>
+      1 sharp edge is worth knowing about, because it costs people days: mesh VPNs establish
+      direct connections by UDP hole punching, which assumes your NAT keeps a stable source
+      port. If the firewall's outbound NAT randomises source ports per destination (some do by
+      default), hole punching fails silently and every connection falls back to the provider's
+      relay servers: it still works, but latency jumps and throughput drops badly on a lossy
+      line. The fix is a <strong>static-port outbound NAT rule</strong> for the VPN host's UDP
+      traffic. The symptom to watch for: the mesh reports connections via a relay
+      (&ldquo;DERP&rdquo; in Tailscale's case) instead of a direct address.
+    </p>
+
+    <h2><span class="num">05</span>Watching the door</h2>
+    <p>
+      Anything that accepts authentication attempts deserves an automated response to abuse.
+      2 complementary tools: <strong>fail2ban</strong> reads a service's own logs and bans
+      addresses that fail repeatedly, which is the right shape for protecting a specific
+      daemon; <strong>CrowdSec</strong> does the same job with modern scenario detection and
+      adds a crowd-sourced reputation feed, so addresses that attacked other people's networks
+      are banned before they try yours. On a network with no inbound exposure these mostly
+      protect services reachable over the VPN, which is exactly when you want the safety net:
+      the moment something is exposed by mistake.
+    </p>
+
+    <h2><span class="num">06</span>Bufferbloat: the invisible latency tax</h2>
+    <p>
+      When an upload saturates the line, cheap router buffers fill up and every other flow
+      queues behind it: video calls stutter and pings climb from 20ms to 500ms while a backup
+      runs. The fix is modern queue management: enable <strong>fq_codel</strong> (or CAKE)
+      shaping on the WAN interface, capped slightly below your measured line rate in each
+      direction, so the queue lives in the firewall where it is managed instead of in the
+      modem where it is not. Measure before and after with a bufferbloat test; the difference
+      under load is usually 1 to 2 orders of magnitude.
+    </p>
+
+    <h2><span class="num">07</span>Patching without touching</h2>
+    <p>
+      Unpatched edge devices are how home networks actually get compromised, and manual
+      patching stops happening the first busy month. Enable unattended security updates on
+      every Linux host, and for the firewall itself take a configuration backup before each
+      update; every mainstream firewall can export its full state as a single file, and
+      restoring one turns a dead box into a 20-minute rebuild.
+    </p>
+
+    <h2><span class="num">08</span>Operational lessons</h2>
+    <p>
+      Designs are easy; running them teaches different things. 3 lessons that survive contact
+      with reality:
+    </p>
+    <p>
+      <strong>Blocklists have false positives</strong>, and the failure mode is a family member
+      whose shopping link silently fails. Keep an allowlist you can add to in seconds, and check
+      the resolver's query log first whenever &ldquo;the internet is broken&rdquo;: it makes the
+      diagnosis in 1 look.
+    </p>
+    <p>
+      <strong>Long-running daemons leak.</strong> A firewall service that holds deleted files
+      open will slowly eat the disk while every file listing looks normal; the tell is disk
+      usage reported by <span style="font-family: var(--mono); font-size: .85em;">df</span>
+      climbing while <span style="font-family: var(--mono); font-size: .85em;">du</span> stays
+      flat. When the leak is in software you do not maintain, a scheduled service restart is an
+      honest mitigation; monitoring that would catch the disk filling is the real fix, and both
+      together let you sleep.
+    </p>
+    <p>
+      <strong>Degradation hides.</strong> A VPN that falls back from direct connections to
+      relayed ones keeps working, just badly, so nobody notices for weeks. For each path that
+      has a fast mode and a fallback mode, learn the 1 command that tells you which mode you
+      are in, and check it when things feel slow rather than assuming the problem is elsewhere.
+    </p>
+
+    <h2><span class="num">09</span>Build order</h2>
+    <p>
+      If you build this, sequence it so the network keeps working at every step: firewall with
+      default-deny inbound first, then the resolver with no filtering, then filtering once
+      resolution is proven, then the DNS redirect rules, then the VPN (tested from outside
+      before you rely on it), then queue management, then intrusion detection. Each layer is
+      independently useful, and nothing later requires redoing anything earlier.
+    </p>
+
+    <footer>
+      <span>Samuel Metcalfe</span>
+      <span>reference build &middot; example values only</span>
+    </footer>
+  </div>
+</body>
+</html>
