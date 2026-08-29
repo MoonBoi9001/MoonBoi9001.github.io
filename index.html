@@ -676,6 +676,27 @@
     .star { opacity: .5; }
     .reveal { opacity: 1 !important; transform: none !important; }
   }
+
+  @media print {
+    body { background: #fff !important; color: #111 !important; font-weight: 400; }
+    .stars, .aurora, .moon, .nav-links, .egg, .chip-tip, .stat-tip,
+    .available::before, .contact-row button, #contact { display: none !important; }
+    .card, .stat, .stats, .featured, .chips span, .available { background: #fff !important; box-shadow: none !important; border-color: #bbb !important; }
+    h1, h2, .card-head h3, .stat b, .edu .deg { color: #000 !important; }
+    .tagline, .bio, .edu, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
+    .kicker, .nav-name, .role, .lang, .num, .featured .cta { color: #555 !important; }
+    .available { color: #000 !important; }
+    .chips span { color: #333 !important; }
+    a { color: #000 !important; }
+    .card-head h3 a, .stat { text-decoration: none !important; }
+    .card-flagship { border: 2px solid #b08d3c !important; background: #fff !important; }
+    .card-flagship::after { display: none !important; }
+    .work-grid { grid-template-columns: 1fr 1fr !important; }
+    .card, .featured, .stats { break-inside: avoid; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .contact-row a { border-color: #bbb !important; color: #000 !important; }
+    footer { color: #777 !important; border-color: #ddd !important; }
+  }
 </style>
 </head>
 <body>
