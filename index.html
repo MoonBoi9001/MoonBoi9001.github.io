@@ -298,13 +298,19 @@
     background: var(--edge);
     border: 1px solid var(--edge);
     border-radius: 12px;
-    overflow: hidden;
     animation: fadeup .9s ease-out .7s both;
   }
+  .stat:first-child { border-radius: 11px 0 0 11px; }
+  .stat:last-child { border-radius: 0 11px 11px 0; }
   .stat {
+    position: relative;
+    display: block;
+    color: inherit;
     background: var(--night);
     padding: 1.3rem 1.4rem;
+    transition: background .25s;
   }
+  a.stat:hover { background: #10131f; text-decoration: none; }
   .stat b {
     display: block;
     font-family: var(--serif);
@@ -563,7 +569,7 @@
   }
   .chips { --chip: var(--moonlight); }
   .chips span { position: relative; }
-  .chip-tip {
+  .chip-tip, .stat-tip {
     position: absolute;
     bottom: calc(100% + 10px);
     left: 50%;
@@ -589,13 +595,14 @@
     transition: opacity .2s ease, transform .2s ease, visibility .2s;
     z-index: 6;
   }
-  .chips span:hover > .chip-tip {
+  .chips span:hover > .chip-tip, .stat:hover > .stat-tip {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: translateX(-50%) translateY(0);
   }
   .chip-tip a { color: var(--accent); }
+  .stat-tip { font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; }
   @media (max-width: 44rem) {
     .chip-tip { max-width: 14rem; }
   }
@@ -700,10 +707,10 @@
     </header>
 
     <div class="stats">
-      <div class="stat"><b>8</b><small>services and tools built or maintained across The Graph ecosystem</small></div>
-      <div class="stat"><b>113<span style="font-size:1.1rem">/119</span></b><small>dipper changes merged Dec 2025 to Aug 2026, excluding bot dependency updates</small></div>
-      <div class="stat"><b>1.7B</b><small>gateway query records replayed by the daily selection pipeline</small></div>
-      <div class="stat"><b>6</b><small>languages running in production: Rust, Python, TypeScript, Go, AssemblyScript, SQL</small></div>
+      <a class="stat" href="https://github.com/MoonBoi9001"><b>8</b><small>services and tools built or maintained across The Graph ecosystem</small><span class="stat-tip">The 6 services on this page, plus the CCIP bridge capacity monitor and the end-to-end payments test harness in local-network.</span></a>
+      <a class="stat" href="https://github.com/edgeandnode/dipper/pulls?q=is%3Apr+author%3AMoonBoi9001+is%3Amerged"><b>113<span style="font-size:1.1rem">/119</span></b><small>dipper changes merged Dec 2025 to Aug 2026, excluding bot dependency updates</small><span class="stat-tip">Click to see the merged pull requests on GitHub; the other 6 in that window were automated dependency updates.</span></a>
+      <a class="stat" href="https://github.com/edgeandnode/subgraph-dips-indexer-selection"><b>1.7B</b><small>gateway query records replayed by the daily selection pipeline</small><span class="stat-tip">Documented in the selection service's README: the daily measurement job replays recent gateway query traffic from Redpanda.</span></a>
+      <a class="stat" href="https://github.com/MoonBoi9001?tab=repositories"><b>6</b><small>languages running in production: Rust, Python, TypeScript, Go, AssemblyScript, SQL</small><span class="stat-tip">Rust in dipper and indexer-rs, Python in the selection service and oracle, TypeScript in the indexer agent, AssemblyScript in the subgraph, SQL throughout, and Go in the load balancer on my own fleet.</span></a>
     </div>
 
     <section id="work">
