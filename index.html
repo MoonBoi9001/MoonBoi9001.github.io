@@ -1109,6 +1109,21 @@
           btn.replaceWith(link, copy);
         }, { once: true });
       });
+      if (!calm && matchMedia('(hover: hover)').matches) {
+        const aurora = document.querySelector('.aurora');
+        let raf = null;
+        addEventListener('mousemove', (e) => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            const dx = e.clientX / innerWidth - .5;
+            const dy = e.clientY / innerHeight - .5;
+            field.style.translate = (dx * -10) + 'px ' + (dy * -10) + 'px';
+            aurora.style.translate = (dx * -5) + 'px ' + (dy * -5) + 'px';
+            moon.style.translate = (dx * 7) + 'px ' + (dy * 7) + 'px';
+            raf = null;
+          });
+        });
+      }
       if (!calm && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
