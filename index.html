@@ -333,6 +333,7 @@
   .stat:nth-child(2) b { color: var(--ice); }
   .stat:nth-child(3) b { color: var(--teal); }
   .stat:nth-child(4) b { color: var(--lavender); }
+  .stat:nth-child(5) b { color: var(--green); }
   .stat small {
     font-size: .85rem;
     color: var(--moonlight-dim);
@@ -743,6 +744,7 @@
       <a class="stat" href="https://github.com/edgeandnode/dipper/pulls?q=is%3Apr+author%3AMoonBoi9001+is%3Amerged"><b>113<span style="font-size:1.1rem">/119</span></b><small>dipper changes merged Dec 2025 to Aug 2026, excluding bot dependency updates</small><span class="stat-tip">Click to see the merged pull requests on GitHub; the other 6 in that window were automated dependency updates.</span></a>
       <a class="stat" href="https://github.com/edgeandnode/subgraph-dips-indexer-selection"><b>1.7B</b><small>gateway query records replayed by the daily selection pipeline</small><span class="stat-tip">Documented in the selection service's README: the daily measurement job replays recent gateway query traffic from Redpanda.</span></a>
       <a class="stat" href="https://github.com/MoonBoi9001?tab=repositories"><b>6</b><small>languages running in production: Rust, Python, TypeScript, Go, AssemblyScript, SQL</small><span class="stat-tip">Rust in dipper and indexer-rs, Python in the selection service and oracle, TypeScript in the indexer agent, AssemblyScript in the subgraph, SQL throughout, and Go in the load balancer on my own fleet.</span></a>
+      <div class="stat"><b>35M</b><small>chain RPC requests routed daily by my Go load balancer</small><span class="stat-tip">Measured from the balancer's own metrics: about 25,000 requests a minute averaged across Arbitrum, Avalanche, Ethereum and their testnets. Private repo; demo on request.</span></div>
     </div>
 
     <section id="work">
