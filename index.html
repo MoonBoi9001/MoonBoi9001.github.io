@@ -487,17 +487,7 @@
   .e-l3 { animation: egg-blink 1.4s infinite .6s; }
   .e-l4 { animation: egg-blink .9s infinite .2s; }
   .e-shield { animation: egg-pulse 1.8s ease-in-out infinite alternate; }
-  .egg-bridge {
-    left: 1.1rem;
-    right: 1.1rem;
-    width: auto;
-    height: 48px;
-    bottom: .6rem;
-  }
-  .card-ccip { padding-bottom: 3.4rem; }
-  .e-car1 { animation: bridge-go 5s linear infinite; }
-  .e-car2 { animation: bridge-go 7.5s linear infinite 2.2s; }
-  .e-car3 { animation: bridge-go 6.2s linear infinite reverse .8s; }
+  .e-hop { animation: egg-hop 2.6s ease-in-out infinite; }
   @keyframes egg-rise { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
   @keyframes egg-drop { 0% { transform: translateY(-12px); opacity: 0; } 25% { opacity: 1; } 75% { transform: translateY(9px); opacity: 1; } 100% { transform: translateY(11px); opacity: 0; } }
   @keyframes egg-draw { 0% { stroke-dashoffset: 20; } 55%, 100% { stroke-dashoffset: 0; } }
@@ -507,7 +497,7 @@
   @keyframes egg-join-r { from { transform: translateX(5px); } to { transform: translateX(0); } }
   @keyframes egg-blink { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
   @keyframes egg-pulse { from { transform: scale(1); } to { transform: scale(1.07); } }
-  @keyframes bridge-go { from { transform: translateX(-10px); } to { transform: translateX(310px); } }
+  @keyframes egg-hop { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(14px, -12px); } 50% { transform: translate(28px, 0); } 75% { transform: translate(14px, -12px); } }
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
@@ -946,28 +936,7 @@
             low or something looks anomalous. Also scoped the smart contracts for delegating
             GRT across chains.
           </p>
-          <svg class="egg egg-bridge" viewBox="0 0 300 50" preserveAspectRatio="none">
-            <g stroke="#e0785a" stroke-width="2" fill="none">
-              <line x1="0" y1="38" x2="300" y2="38"/>
-              <line x1="90" y1="8" x2="90" y2="42"/>
-              <line x1="210" y1="8" x2="210" y2="42"/>
-              <line x1="84" y1="18" x2="96" y2="18" stroke-width="1.5"/>
-              <line x1="204" y1="18" x2="216" y2="18" stroke-width="1.5"/>
-              <path d="M0 34 C30 26 60 14 90 10" stroke-width="1.5"/>
-              <path d="M90 10 C130 30 170 30 210 10" stroke-width="1.5"/>
-              <path d="M210 10 C240 14 270 26 300 34" stroke-width="1.5"/>
-              <g stroke-width="1" opacity=".7">
-                <line x1="110" y1="18" x2="110" y2="38"/>
-                <line x1="130" y1="24" x2="130" y2="38"/>
-                <line x1="150" y1="26" x2="150" y2="38"/>
-                <line x1="170" y1="24" x2="170" y2="38"/>
-                <line x1="190" y1="18" x2="190" y2="38"/>
-              </g>
-            </g>
-            <circle class="e-car1" cx="0" cy="35" r="2.6" fill="#d9b96c"/>
-            <circle class="e-car2" cx="0" cy="35" r="2.2" fill="#9db8e8"/>
-            <circle class="e-car3" cx="0" cy="41" r="2.4" fill="#7fd6bb"/>
-          </svg>
+          <svg class="egg" viewBox="0 0 48 34"><circle cx="10" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle cx="38" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle class="e-hop" cx="10" cy="24" r="3" fill="#7ab8e0"/></svg>
         </article>
       </div>
     </section>
