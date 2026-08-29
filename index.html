@@ -1150,7 +1150,7 @@
           entries.forEach((e) => {
             if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); }
           });
-        }, { threshold: .12 });
+        }, { rootMargin: '9999px 0px -8% 0px' });
         document.querySelectorAll('.card, .featured, .elsewhere-list li, .section-head, .section-note, .chips')
           .forEach((el) => {
             if (el.getBoundingClientRect().top > innerHeight * .92) {
