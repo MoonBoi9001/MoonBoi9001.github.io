@@ -607,11 +607,17 @@
     transition: opacity .2s ease, transform .2s ease, visibility .2s;
     z-index: 6;
   }
-  .chips > span:hover > .chip-tip, .stat:hover > .stat-tip {
+  .chips > span:hover > .chip-tip, .stat:hover > .stat-tip,
+  .chips > span:focus-visible > .chip-tip, .stat:focus-visible > .stat-tip,
+  .chips > span.tip-open > .chip-tip, .stat.tip-open > .stat-tip {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: translateX(-50%) translateY(0);
+  }
+  .chips > span:focus-visible, .stat:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
   }
   .chip-tip a { color: var(--accent); }
   .stat-tip { font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; }
@@ -1192,6 +1198,29 @@
             }
           });
       }
+      const tipHosts = [...document.querySelectorAll('.chips > span, .stat')]
+        .filter((el) => el.querySelector('.chip-tip, .stat-tip'));
+      const touchOnly = matchMedia('(hover: none)').matches;
+      tipHosts.forEach((el) => {
+        el.setAttribute('tabindex', '0');
+        if (touchOnly) {
+          el.addEventListener('click', (e) => {
+            if (e.target.closest('.chip-tip, .stat-tip')) return;
+            if (!el.classList.contains('tip-open')) {
+              e.preventDefault();
+              e.stopPropagation();
+              tipHosts.forEach((o) => o.classList.remove('tip-open'));
+              el.classList.add('tip-open');
+            }
+          });
+        }
+      });
+      if (touchOnly) {
+        document.addEventListener('click', () => tipHosts.forEach((o) => o.classList.remove('tip-open')));
+      }
+      addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') tipHosts.forEach((o) => o.classList.remove('tip-open'));
+      });
       const spyLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
       const spySections = spyLinks.map((a) => document.querySelector(a.getAttribute('href')));
       let spyRaf = null;
