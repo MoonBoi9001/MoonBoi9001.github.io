@@ -442,6 +442,20 @@
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
+  a.chainlink {
+    color: #7d9bf0;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  a.chainlink svg {
+    width: .78em;
+    height: .9em;
+    fill: #7d9bf0;
+    margin-right: .28em;
+    vertical-align: -.08em;
+  }
+  a.chainlink:hover { color: #9db4f5; text-decoration: underline; }
+  a.chainlink:hover svg { fill: #9db4f5; }
   .wide { grid-column: 1 / -1; }
   .card p {
     font-size: 1rem;
@@ -789,7 +803,7 @@
           </div>
           <span class="role">Bridging</span>
           <p>
-            Worked with Chainlink's team to integrate GRT with CCIP for The Graph's cross-chain
+            Worked with <a class="chainlink" href="https://chain.link"><svg viewBox="0 0 37.8 43.6" aria-hidden="true"><path d="M18.9 0l-4 2.3L4.1 8.6 0 10.9v21.8l4.1 2.3 10.9 6.3 4 2.3 4-2.3 10.7-6.3 4.1-2.3V10.9l-4.1-2.3L23 2.3 18.9 0zM8.1 28.1V15.5l10.8-6.2 10.8 6.2v12.6l-10.8 6.2-10.8-6.2z"/></svg>Chainlink</a>'s team to integrate GRT with CCIP for The Graph's cross-chain
             token launch, and pushed for Avalanche as a supported chain. Deployed GRT on Base
             with a risk assessment approved by The Graph's council. Built the bridge monitoring
             the council required: it checks CCIP rate-limiter capacity across Base, Avalanche,
