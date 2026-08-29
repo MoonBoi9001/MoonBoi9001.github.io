@@ -216,6 +216,7 @@
     transition: color .2s;
   }
   .nav-links a:hover { color: var(--accent); text-decoration: none; }
+  .nav-links a.active { color: var(--accent); }
 
   /* ---- hero ---- */
   header {
@@ -1191,6 +1192,20 @@
             }
           });
       }
+      const spyLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+      const spySections = spyLinks.map((a) => document.querySelector(a.getAttribute('href')));
+      let spyRaf = null;
+      const spy = () => {
+        const y = scrollY + innerHeight * .35;
+        let current = -1;
+        spySections.forEach((sec, i) => { if (sec && sec.offsetTop <= y) current = i; });
+        spyLinks.forEach((a, i) => a.classList.toggle('active', i === current));
+      };
+      addEventListener('scroll', () => {
+        if (spyRaf) return;
+        spyRaf = requestAnimationFrame(() => { spy(); spyRaf = null; });
+      }, { passive: true });
+      spy();
       const toTop = document.querySelector('.to-top');
       let topRaf = null;
       addEventListener('scroll', () => {
