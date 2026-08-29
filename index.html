@@ -507,6 +507,43 @@
     gap: .7rem;
   }
   .chips { --chip: var(--moonlight); }
+  .chips span { position: relative; }
+  .chip-tip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    max-width: 17rem;
+    white-space: normal;
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    font-size: .8rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.55;
+    text-align: left;
+    color: var(--moonlight-dim);
+    background: #0d1020;
+    border: 1px solid var(--edge);
+    border-radius: 10px;
+    padding: .55rem .8rem;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease, visibility .2s;
+    z-index: 6;
+  }
+  .chips span:hover > .chip-tip {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .chip-tip a { color: var(--accent); }
+  @media (max-width: 44rem) {
+    .chip-tip { max-width: 14rem; }
+  }
   .chips span {
     font-family: var(--mono);
     font-size: .78rem;
@@ -803,28 +840,28 @@
 
     <section id="stack">
       <div class="chips">
-        <span class="chip-rust">Rust</span>
-        <span class="chip-python">Python</span>
-        <span class="chip-go">Go</span>
-        <span class="chip-ts">TypeScript</span>
-        <span class="chip-sql">SQL</span>
-        <span class="chip-postgres">PostgreSQL</span>
-        <span class="chip-graphql">GraphQL</span>
-        <span class="chip-docker">Docker</span>
-        <span class="chip-kafka">Kafka</span>
-        <span class="chip-redpanda">Redpanda</span>
-        <span class="chip-ansible">Ansible</span>
-        <span class="chip-k8s">Kubernetes</span>
-        <span class="chip-proxmox">Proxmox</span>
-        <span class="chip-solidity">Solidity</span>
-        <span class="chip-ethereum">Ethereum</span>
-        <span class="chip-asc">AssemblyScript</span>
-        <span class="chip-grpc">gRPC</span>
-        <span class="chip-zfs">ZFS</span>
-        <span class="chip-sklearn">scikit-learn</span>
-        <span class="chip-ccip">Chainlink CCIP</span>
-        <span class="chip-avax">Avalanche</span>
-        <span class="chip-swift">Swift</span>
+        <span class="chip-rust">Rust<span class="chip-tip">Built <a href="https://github.com/edgeandnode/dipper">dipper</a>'s agreement lifecycle and chain listener; rebuilt the proposal trust model in <a href="https://github.com/graphprotocol/indexer-rs">indexer-rs</a>.</span></span>
+        <span class="chip-python">Python<span class="chip-tip">The <a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">indexer selection service</a> and the <a href="https://github.com/graphprotocol/rewards-eligibility-oracle">rewards eligibility oracle</a>, both running in production.</span></span>
+        <span class="chip-go">Go<span class="chip-tip">A load balancer fronting my own EVM node fleet. Private repo; demo on request.</span></span>
+        <span class="chip-ts">TypeScript<span class="chip-tip">Parallel on-chain acceptance and 3 payment-loss fixes in <a href="https://github.com/graphprotocol/indexer">the indexer agent</a>.</span></span>
+        <span class="chip-sql">SQL<span class="chip-tip">Schema design, migrations and analytical queries across dipper and the daily selection pipeline.</span></span>
+        <span class="chip-postgres">PostgreSQL<span class="chip-tip">Async persistence and schema migrations in dipper; agreement storage in indexer-rs.</span></span>
+        <span class="chip-graphql">GraphQL<span class="chip-tip">Created the <a href="https://github.com/graphprotocol/indexing-payments-subgraph">indexing payments subgraph</a>, serving on-chain events from 1 endpoint.</span></span>
+        <span class="chip-docker">Docker<span class="chip-tip">Everything I self-host runs in it, and the local-network stack I used for end-to-end payment testing.</span></span>
+        <span class="chip-kafka">Kafka<span class="chip-tip">dipper streams agreement lifecycle events to it.</span></span>
+        <span class="chip-redpanda">Redpanda<span class="chip-tip">The selection pipeline replays about 1.7 billion gateway query records from it every day.</span></span>
+        <span class="chip-ansible">Ansible<span class="chip-tip">My Proxmox and KVM hosts are configured entirely through it.</span></span>
+        <span class="chip-k8s">Kubernetes<span class="chip-tip">The selection service, its daily measurement job, and the rewards oracle all run on it in production.</span></span>
+        <span class="chip-proxmox">Proxmox<span class="chip-tip">The hypervisor under my home fleet of chain nodes and services.</span></span>
+        <span class="chip-solidity">Solidity<span class="chip-tip">Addressed 13 OpenZeppelin audit findings on The Graph's Horizon contracts; scoped the cross-chain delegation contracts.</span></span>
+        <span class="chip-ethereum">Ethereum<span class="chip-tip">I run an archive node, moved DIPs to on-chain escrow payments, and deployed GRT on Base.</span></span>
+        <span class="chip-asc">AssemblyScript<span class="chip-tip">The mappings in the <a href="https://github.com/graphprotocol/indexing-payments-subgraph">indexing payments subgraph</a>.</span></span>
+        <span class="chip-grpc">gRPC<span class="chip-tip">dipper's services and indexer-rs's proposal handling speak it to each other.</span></span>
+        <span class="chip-zfs">ZFS<span class="chip-tip">The storage under my fleet, with automated snapshot policies.</span></span>
+        <span class="chip-sklearn">scikit-learn<span class="chip-tip">The latency regression in the <a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">selection service</a>: encoding, scaling and a linear model fitted daily.</span></span>
+        <span class="chip-ccip">Chainlink CCIP<span class="chip-tip">Worked with Chainlink's team on GRT's cross-chain launch and built the bridge capacity monitoring for it.</span></span>
+        <span class="chip-avax">Avalanche<span class="chip-tip">An Avalanche node runs in my home fleet; also an ERC20 launch project on C-Chain from a 2024 hackathon.</span></span>
+        <span class="chip-swift">Swift<span class="chip-tip"><a href="https://github.com/MoonBoi9001/apple-juice">apple-juice</a>, a Mac battery management CLI shipped via Homebrew.</span></span>
       </div>
     </section>
 
