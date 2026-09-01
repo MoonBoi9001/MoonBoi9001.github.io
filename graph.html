@@ -410,6 +410,9 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       }
       window.addEventListener('resize', resize);
+      // Embedded, the frame takes its final size after boot (the panel grows once fonts load),
+      // so keep the map fitted to whatever size it ends up with.
+      if (EMBED) window.addEventListener('resize', () => fit(false));
 
       // ---------- layout: anchored force settle ----------
       const districtAnchor = {
@@ -518,6 +521,8 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
       let camTarget = null;
 
       function worldToScreen(x, y) { return { x: x * cam.scale + cam.x, y: y * cam.scale + cam.y }; }
+      // Screen positions of the drawn contracts; the home page's tests use it to check the embed fits.
+      window.__mapNodes = () => nodes.filter((n) => isVisible(n.ref)).map((n) => worldToScreen(n.x, n.y));
       function screenToWorld(x, y) { return { x: (x - cam.x) / cam.scale, y: (y - cam.y) / cam.scale }; }
 
       // ---------- state ----------

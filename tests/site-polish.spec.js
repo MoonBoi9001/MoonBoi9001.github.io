@@ -32,6 +32,18 @@ test.describe('wide screen with a mouse', () => {
     await expect(embedded.locator('canvas#cv')).toBeVisible();
     await expect(embedded.locator('header')).toBeHidden();
     await expect(embedded.locator('.ticker')).toBeHidden();
+    // The frame is sized after boot, so the map must stay centred in it.
+    const mapFrame = page.frames().find((f) => f.url().includes('embed'));
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.waitForTimeout(400);
+    const centred = await mapFrame.evaluate(() => {
+      const nodes = window.__mapNodes();
+      const xs = nodes.map((n) => n.x), ys = nodes.map((n) => n.y);
+      const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      return { dx: Math.abs(cx - innerWidth / 2) / innerWidth, dy: Math.abs(cy - innerHeight / 2) / innerHeight };
+    });
+    expect(centred.dx).toBeLessThan(.08);
+    expect(centred.dy).toBeLessThan(.08);
   });
 });
 
