@@ -857,8 +857,10 @@
   .to-top.show { opacity: 1; visibility: visible; transform: none; }
   .to-top:hover { border-color: var(--accent); color: var(--accent); }
 
-  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
-  .reveal.shown { opacity: 1; transform: none; }
+  /* Once shown, the classes come off again (see the observer below) so the hover
+     raise on cards and the featured panel keeps its own quicker transition. */
+  .reveal { transition: opacity .7s ease, transform .7s ease; }
+  .reveal:not(.shown) { opacity: 0; transform: translateY(18px); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -1485,7 +1487,11 @@
       if (!calm && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
-            if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); }
+            if (e.isIntersecting) {
+              e.target.classList.add('shown');
+              io.unobserve(e.target);
+              e.target.addEventListener('transitionend', () => e.target.classList.remove('reveal', 'shown'), { once: true });
+            }
           });
         }, { rootMargin: '9999px 0px -8% 0px' });
         document.querySelectorAll('.card:not(.drop-armed), .featured, .elsewhere-list li, .section-head, .section-note, .chips')
