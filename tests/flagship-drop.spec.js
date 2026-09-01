@@ -21,18 +21,21 @@ test.describe('wide screen with a mouse', () => {
     await page.goto(page_url);
     const card = page.locator('.card-flagship');
     const slot = page.locator('.flagship-slot');
-    const grid = page.locator('.work-grid');
+    const wrap = page.locator('.wrap');
+    const shatter = page.locator('.shatter');
 
     await expect(card).toHaveClass(/drop-armed/);
     await scrollFlagshipIntoView(page);
     await expect(card).toHaveClass(/dropping/);
     await expect(slot).toHaveClass(/cracked/);
-    await expect(grid).toHaveClass(/quake/);
+    await expect(wrap).toHaveClass(/quake/);
+    await expect(shatter).toHaveClass(/on/);
 
     // Once landed, every temporary class is gone and the card sits flat in its slot, so
     // the ordinary hover lift can take over again.
     await expect(card).not.toHaveClass(/dropping|drop-armed/, { timeout: 5000 });
-    await expect(grid).not.toHaveClass(/quake/);
+    await expect(wrap).not.toHaveClass(/quake/);
+    await expect(shatter).not.toHaveClass(/on/, { timeout: 5000 });
     await expect(slot).not.toHaveClass(/cracked/, { timeout: 5000 });
     const settled = await card.evaluate((el) => {
       const cs = getComputedStyle(el);
@@ -69,5 +72,6 @@ test.describe('phone', () => {
     await expect(card).not.toHaveClass(/drop-armed|dropping/);
     await expect(card).toHaveCSS('opacity', '1');
     await expect(page.locator('.flagship-slot')).not.toHaveClass(/cracked/);
+    await expect(page.locator('.shatter')).toHaveCSS('opacity', '0');
   });
 });
