@@ -702,13 +702,23 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
     text-decoration: none;
   }
-  .featured img {
+  .featured-map {
+    position: relative;
     width: 38%;
     min-width: 200px;
-    object-fit: cover;
     border-radius: 8px;
     border: 1px solid var(--edge);
+    overflow: hidden;
+    background: #0e1120;
   }
+  .featured-map img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* The live map replaces the picture on wide mouse-driven screens (added by script). It is
+     decorative: clicks and scrolling pass straight through to the surrounding link. */
+  .featured-map iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+    pointer-events: none; opacity: 0; transition: opacity .6s ease;
+  }
+  .featured-map iframe.ready { opacity: 1; }
   .featured-text h3 { font-size: 1.05rem; font-weight: 700; color: var(--halo); }
   .featured-text p { margin-top: .4rem; font-size: .95rem; color: var(--moonlight-dim); }
   .featured .cta {
@@ -720,7 +730,7 @@
   }
   @media (max-width: 44rem) {
     .featured { flex-direction: column; }
-    .featured img { width: 100%; min-width: 0; }
+    .featured-map { width: 100%; min-width: 0; aspect-ratio: 800 / 480; }
   }
   .elsewhere-list { list-style: none; }
   .elsewhere-list li {
@@ -1167,7 +1177,9 @@
       <p class="section-note">Outside the payments stack.</p>
 
       <a class="featured" href="graph.html">
-        <img src="map-preview.png" alt="Interactive map of The Graph Protocol's contract system" loading="lazy">
+        <div class="featured-map">
+          <img src="map-preview.png" alt="Interactive map of The Graph Protocol's contract system" loading="lazy">
+        </div>
         <div class="featured-text">
           <h3>The Graph Protocol contract map</h3>
           <p>The entire Graph Protocol contract system as 1 interactive, dependency-free HTML
@@ -1444,8 +1456,19 @@
           });
         });
       }
-      const slot = document.querySelector('.flagship-slot');
       const wideMouse = matchMedia('(min-width: 64rem) and (hover: hover) and (pointer: fine)').matches;
+      const mapBox = document.querySelector('.featured-map');
+      if (mapBox && !calm && wideMouse) {
+        const live = document.createElement('iframe');
+        live.src = 'graph.html?embed';
+        live.title = 'Live preview of the contract map';
+        live.loading = 'lazy';
+        live.tabIndex = -1;
+        live.setAttribute('aria-hidden', 'true');
+        live.addEventListener('load', () => live.classList.add('ready'));
+        mapBox.append(live);
+      }
+      const slot = document.querySelector('.flagship-slot');
       if (slot && !calm && wideMouse && 'IntersectionObserver' in window) {
         const card = slot.querySelector('.card-flagship');
         const wrap = document.querySelector('.wrap');

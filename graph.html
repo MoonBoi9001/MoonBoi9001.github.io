@@ -29,6 +29,8 @@
         -webkit-font-smoothing: antialiased;
       }
       #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+      /* ?embed: just the living map, for the preview on the home page */
+      .embed header, .embed .legend, .embed .hint, .embed .zoombar, .embed .ticker { display: none; }
 
       /* ---------- top bar ---------- */
       header {
@@ -380,6 +382,9 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
 </script>
     <script>
       const DATA = window.__GRAPH_PROTOCOL__;
+      // ?embed strips the chrome so the home page can show the live map as a preview.
+      const EMBED = new URLSearchParams(location.search).has('embed');
+      if (EMBED) document.documentElement.classList.add('embed');
       const LAYERS = DATA.meta.layers;
       const nodesById = {};
       DATA.nodes.forEach((n) => (nodesById[n.id] = n));
@@ -498,7 +503,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           minx = Math.min(minx, n.x - n.r); miny = Math.min(miny, n.y - n.r);
           maxx = Math.max(maxx, n.x + n.r); maxy = Math.max(maxy, n.y + n.r);
         });
-        const pad = 90;
+        const pad = EMBED ? 30 : 90;
         const bw = maxx - minx + pad * 2, bh = maxy - miny + pad * 2;
         const availW = W - (panelOpen ? panelW : 0);
         const availH = H - tickerH;
@@ -524,9 +529,9 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
       function clampPanelW(w) { return Math.max(PANEL_MIN, Math.min(panelMax(), w || 430)); }
       // Resizable event-stream (ticker) height, persisted and clamped to view.
       const TICKER_MIN = 56;
-      let tickerH = clampTickerH(+localStorage.getItem('gpm_tickerH') || 74);
+      let tickerH = EMBED ? 0 : clampTickerH(+localStorage.getItem('gpm_tickerH') || 74);
       function tickerMax() { return Math.max(TICKER_MIN, Math.min(380, window.innerHeight - 240)); }
-      function clampTickerH(h) { return Math.max(TICKER_MIN, Math.min(tickerMax(), h || 74)); }
+      function clampTickerH(h) { return EMBED ? 0 : Math.max(TICKER_MIN, Math.min(tickerMax(), h || 74)); }
       document.documentElement.style.setProperty('--ticker-h', tickerH + 'px');
       let dragging = null, dragNode = null, panStart = null, moved = false;
 
