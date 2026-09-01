@@ -1,0 +1,10 @@
+{
+  "name": "moonboi9001.github.io",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

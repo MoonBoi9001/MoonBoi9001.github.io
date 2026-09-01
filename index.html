@@ -435,7 +435,7 @@
     --card-accent: var(--accent);
     position: relative;
     overflow: hidden;
-    border: 2px solid transparent;
+    border: 3px solid transparent;
     background:
       linear-gradient(var(--night), var(--night)) padding-box,
       linear-gradient(135deg, rgba(217, 185, 108, .75), rgba(217, 185, 108, .2) 45%, rgba(245, 242, 228, .65)) border-box;
@@ -456,6 +456,165 @@
   @keyframes sheen {
     0%, 55% { transform: translateX(-80%); }
     85%, 100% { transform: translateX(80%); }
+  }
+
+  /* Flagship entrance: on wide, mouse-driven screens the card drops in from above the page,
+     flips once, and lands hard enough to crack the ground around it. Armed only from JS, which
+     skips touch screens, narrow layouts and anyone who asked for reduced motion. */
+  .flagship-slot { position: relative; perspective: 1100px; }
+  .drop-shell { position: relative; z-index: 3; transform-style: preserve-3d; }
+  .card-flagship.drop-armed { opacity: 0; }
+  /* Gravity: a body starting 10 camera-heights out and falling with constant acceleration has an
+     apparent size of 1 / (1 + 10(1 - t^2)) of full size at time t. That curve, sampled into a
+     linear() easing, shapes the shell's growth from a 3% speck to full size. The card inside makes
+     2 pitch turns, slow while it is a speck and quickest just before it hits. */
+  .drop-shell:has(.dropping) {
+    z-index: 5;
+    animation: flagship-fall 2.7s linear(0, 0, 0.0001, 0.0002, 0.0004, 0.0006, 0.0008, 0.0011, 0.0014, 0.0018, 0.0023, 0.0028, 0.0033, 0.0039, 0.0045, 0.0053, 0.006, 0.0069, 0.0077, 0.0087, 0.0097, 0.0108, 0.012, 0.0133, 0.0147, 0.0161, 0.0177, 0.0193, 0.0211, 0.0229, 0.025, 0.0271, 0.0294, 0.0319, 0.0345, 0.0373, 0.0404, 0.0436, 0.0472, 0.051, 0.0551, 0.0595, 0.0643, 0.0696, 0.0753, 0.0816, 0.0886, 0.0962, 0.1047, 0.1141, 0.1247, 0.1366, 0.1501, 0.1656, 0.1834, 0.2043, 0.229, 0.2586, 0.2947, 0.3397, 0.3975, 0.4743, 0.581, 0.7397, 1) both;
+  }
+  @keyframes flagship-fall {
+    0% { transform: scale(.03); }
+    100% { transform: scale(1); }
+  }
+  .card-flagship.dropping {
+    animation:
+      flagship-spin 2.7s cubic-bezier(.55, 0, 1, .55) both,
+      flagship-land .5s 2.7s ease-out forwards;
+  }
+  @keyframes flagship-spin {
+    0% { opacity: 0; transform: rotateX(-720deg); filter: blur(1.5px); }
+    8% { opacity: 1; }
+    60% { filter: blur(.6px); }
+    85% { filter: blur(0) drop-shadow(0 0 22px rgba(217, 185, 108, .55)); }
+    100% { opacity: 1; transform: rotateX(0deg); filter: blur(0) drop-shadow(0 0 0 transparent); }
+  }
+  @keyframes flagship-land {
+    0% { transform: scaleY(.9) scaleX(1.06); box-shadow: 0 0 90px 10px rgba(217, 185, 108, .55); }
+    45% { transform: scaleY(1.03) scaleX(.985); }
+    100% { transform: none; box-shadow: 0 0 26px rgba(217, 185, 108, .12); }
+  }
+  /* Shadow on the floor that grows and darkens as the card gets closer. */
+  .flagship-slot::before {
+    content: "";
+    position: absolute;
+    inset: 4%;
+    border-radius: 24px;
+    background: rgba(0, 0, 0, .85);
+    box-shadow: 0 0 60px 30px rgba(0, 0, 0, .85);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .flagship-slot:has(.dropping)::before { animation: ground-shadow 2.7s linear(0, 0, 0.0001, 0.0002, 0.0004, 0.0006, 0.0008, 0.0011, 0.0014, 0.0018, 0.0023, 0.0028, 0.0033, 0.0039, 0.0045, 0.0053, 0.006, 0.0069, 0.0077, 0.0087, 0.0097, 0.0108, 0.012, 0.0133, 0.0147, 0.0161, 0.0177, 0.0193, 0.0211, 0.0229, 0.025, 0.0271, 0.0294, 0.0319, 0.0345, 0.0373, 0.0404, 0.0436, 0.0472, 0.051, 0.0551, 0.0595, 0.0643, 0.0696, 0.0753, 0.0816, 0.0886, 0.0962, 0.1047, 0.1141, 0.1247, 0.1366, 0.1501, 0.1656, 0.1834, 0.2043, 0.229, 0.2586, 0.2947, 0.3397, 0.3975, 0.4743, 0.581, 0.7397, 1) both; }
+  @keyframes ground-shadow {
+    0% { opacity: 0; transform: scale(.03); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+  /* Impact: the whole page shakes, the screen flashes, rock chunks fly out of the crater and a
+     shattered-glass overlay spreads from the point of impact before everything fades. */
+  .wrap.quake { animation: quake .7s cubic-bezier(.2, .7, .3, 1); }
+  @keyframes quake {
+    0%, 100% { transform: none; }
+    8% { transform: translate(18px, -14px) rotate(.6deg); }
+    18% { transform: translate(-16px, 12px) rotate(-.5deg); }
+    30% { transform: translate(12px, 8px) rotate(.3deg); }
+    42% { transform: translate(-9px, -7px) rotate(-.25deg); }
+    56% { transform: translate(6px, 4px); }
+    72% { transform: translate(-3px, -2px); }
+    88% { transform: translate(1px, 1px); }
+  }
+  .impact-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: radial-gradient(circle at var(--ix, 50%) var(--iy, 50%), rgba(255, 246, 220, .95), rgba(217, 185, 108, .55) 30%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .impact-flash.on { animation: flash .45s ease-out forwards; }
+  @keyframes flash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .shatter {
+    position: fixed;
+    left: var(--ix, 50%);
+    top: var(--iy, 50%);
+    width: 2600px;
+    height: 2600px;
+    z-index: 41;
+    translate: -50% -50%;
+    opacity: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .shatter path {
+    fill: none;
+    stroke: rgba(245, 242, 228, .55);
+    stroke-width: 1.4px;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .shatter.on { opacity: 1; animation: shatter-fade .9s .5s ease-in forwards; }
+  .shatter.on path { stroke-dashoffset: 0; transition: stroke-dashoffset .22s ease-out; }
+  .shatter.on path:nth-child(3n) { transition-delay: .05s; }
+  .shatter.on path:nth-child(3n + 1) { transition-delay: .1s; }
+  @keyframes shatter-fade { to { opacity: 0; } }
+  .debris { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+  .debris i {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    width: calc(var(--s) * 1.8);
+    height: calc(var(--s) * 1.4);
+    background: linear-gradient(135deg, #8a7448, #3b352a 55%, #1c1a1e);
+    box-shadow: 0 0 6px rgba(217, 185, 108, .35);
+    clip-path: polygon(20% 0, 100% 15%, 85% 100%, 0 80%);
+    opacity: 0;
+  }
+  .cracked .debris i { animation: debris-fly .95s var(--d) cubic-bezier(.2, .6, .6, 1) forwards; }
+  @keyframes debris-fly {
+    0% { opacity: 1; transform: translate(0, 0) rotate(0); }
+    45% { opacity: 1; transform: translate(calc(var(--dx) * .6), var(--up)) rotate(calc(var(--r) * .5)); }
+    100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 90px)) rotate(var(--r)); }
+  }
+  .cracks {
+    position: absolute;
+    top: -24%;
+    left: -24%;
+    width: 148%;
+    height: 148%;
+    overflow: visible;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .cracks path, .cracks .wave {
+    fill: none;
+    stroke: rgba(217, 185, 108, .9);
+    stroke-width: 2.6px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .cracks path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .cracks .branch { stroke-width: 1.4px; stroke: rgba(217, 185, 108, .6); }
+  .cracks .fine { stroke-width: 1px; stroke: rgba(217, 185, 108, .45); }
+  .cracks .crater { opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .cracked .cracks .crater { animation: crater-in .3s ease-out forwards; }
+  @keyframes crater-in { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+  .cracks .wave { stroke-width: 3px; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .cracked .cracks { opacity: 1; animation: cracks-fade 1.6s 1.6s ease-out forwards; }
+  .cracked .cracks path { stroke-dashoffset: 0; transition: stroke-dashoffset .45s ease-out; }
+  .cracked .cracks .branch { transition-delay: .25s; }
+  .cracked .cracks .fine { transition-delay: .12s; transition-duration: .6s; }
+  .cracked .cracks .wave-2 { animation-delay: .18s; }
+  .cracked .cracks .wave { animation: shockwave .7s ease-out forwards; }
+  @keyframes cracks-fade { to { opacity: 0; } }
+  @keyframes shockwave {
+    from { transform: scale(1); opacity: .85; }
+    to { transform: scale(1.5); opacity: 0; }
   }
   .card { position: relative; }
   .egg {
@@ -719,8 +878,8 @@
     .chips span { color: #333 !important; }
     a { color: #000 !important; }
     .card-head h3 a, .stat { text-decoration: none !important; }
-    .card-flagship { border: 2px solid #b08d3c !important; background: #fff !important; }
-    .card-flagship::after { display: none !important; }
+    .card-flagship { border: 3px solid #b08d3c !important; background: #fff !important; }
+    .card-flagship::after, .cracks, .debris, .shatter, .impact-flash { display: none !important; }
     .work-grid { grid-template-columns: 1fr 1fr !important; }
     .card, .featured, .stats { break-inside: avoid; }
     .reveal { opacity: 1 !important; transform: none !important; }
@@ -782,6 +941,8 @@
       <p class="section-note">The indexing payments stack on The Graph, end to end. All code is public.</p>
 
       <div class="work-grid">
+        <div class="flagship-slot">
+        <div class="drop-shell">
         <article class="card card-flagship">
           <div class="card-head">
             <h3><a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">subgraph-dips-indexer-selection</a></h3>
@@ -800,6 +961,64 @@
           </p>
           <svg class="egg" viewBox="0 0 44 34"><g fill="#d9b96c"><rect class="e-b1" x="6" y="14" width="7" height="16" rx="1.5"/><rect class="e-b2" x="18" y="6" width="7" height="24" rx="1.5"/><rect class="e-b3" x="30" y="20" width="7" height="10" rx="1.5"/></g></svg>
         </article>
+        </div>
+        <svg class="cracks" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <radialGradient id="crater">
+              <stop offset="0" stop-color="#000" stop-opacity=".9"/>
+              <stop offset=".45" stop-color="#000" stop-opacity=".55"/>
+              <stop offset="1" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse class="crater" cx="50" cy="50" rx="50" ry="50" fill="url(#crater)"/>
+          <ellipse class="wave" cx="50" cy="50" rx="34" ry="34"/>
+          <ellipse class="wave wave-2" cx="50" cy="50" rx="34" ry="34"/>
+          <path pathLength="1" d="M50 50 L44 41 L38 36 L31 29 L24 22 L17 15 L9 8 L2 1"/>
+          <path pathLength="1" d="M50 50 L58 44 L67 40 L74 33 L82 28 L90 21 L98 12"/>
+          <path pathLength="1" d="M50 50 L54 58 L61 63 L64 71 L72 78 L79 87 L86 98"/>
+          <path pathLength="1" d="M50 50 L43 57 L36 60 L30 68 L23 74 L15 83 L7 97"/>
+          <path pathLength="1" d="M50 50 L51 39 L49 30 L52 21 L48 12 L51 2"/>
+          <path pathLength="1" d="M50 50 L39 51 L31 49 L21 52 L11 50 L1 52"/>
+          <path pathLength="1" d="M50 50 L61 52 L70 50 L79 53 L89 51 L99 53"/>
+          <path pathLength="1" d="M50 50 L52 61 L49 70 L52 79 L49 90 L52 99"/>
+          <path class="branch" pathLength="1" d="M17 15 L12 18 L6 17"/>
+          <path class="branch" pathLength="1" d="M82 28 L86 33 L93 35"/>
+          <path class="branch" pathLength="1" d="M15 83 L10 80 L4 84"/>
+          <path class="branch" pathLength="1" d="M79 87 L84 89 L87 95"/>
+          <path class="branch" pathLength="1" d="M11 50 L8 56 L2 58"/>
+          <path class="branch" pathLength="1" d="M89 51 L92 45 L98 44"/>
+          <path class="branch" pathLength="1" d="M48 12 L43 8 L41 2"/>
+          <path class="branch" pathLength="1" d="M49 90 L55 94 L57 99"/>
+          <path class="fine" pathLength="1" d="M50 50 L61 55 L70 60 L79 62 L84 67 L91 73 L104 68 L111 69"/>
+          <path class="fine" pathLength="1" d="M50 50 L53 60 L59 65 L60 75 L67 82 L74 89 L72 100 L73 112"/>
+          <path class="fine" pathLength="1" d="M50 50 L46 61 L44 69 L36 78 L41 89 L29 95 L32 106 L16 110"/>
+          <path class="fine" pathLength="1" d="M50 50 L43 54 L35 57 L26 63 L14 62 L8 73 L-3 76 L-13 83"/>
+          <path class="fine" pathLength="1" d="M50 50 L43 46 L36 42 L25 43 L18 38 L11 28 L1 32 L-2 19 L-16 34"/>
+          <path class="fine" pathLength="1" d="M50 50 L47 43 L45 32 L43 21 L32 13 L37 3 L19 -1 L20 -13"/>
+          <path class="fine" pathLength="1" d="M50 50 L53 42 L54 34 L58 26 L60 14 L64 3 L77 -1 L74 -14"/>
+          <path class="fine" pathLength="1" d="M50 50 L57 47 L66 46 L72 40 L80 31 L93 37 L97 21 L104 18"/>
+        </svg>
+        <div class="debris" aria-hidden="true">
+          <i style="--dx:-49px;--dy:-90px;--up:-207px;--r:405deg;--s:8px;--d:0.08s"></i>
+          <i style="--dx:-87px;--dy:-105px;--up:-185px;--r:379deg;--s:9px;--d:0.07s"></i>
+          <i style="--dx:285px;--dy:2px;--up:-199px;--r:-689deg;--s:8px;--d:0.00s"></i>
+          <i style="--dx:-11px;--dy:-96px;--up:-98px;--r:719deg;--s:12px;--d:0.03s"></i>
+          <i style="--dx:-162px;--dy:43px;--up:-96px;--r:-227deg;--s:13px;--d:0.05s"></i>
+          <i style="--dx:198px;--dy:148px;--up:-147px;--r:299deg;--s:10px;--d:0.08s"></i>
+          <i style="--dx:223px;--dy:-109px;--up:-172px;--r:-574deg;--s:6px;--d:0.06s"></i>
+          <i style="--dx:-272px;--dy:48px;--up:-174px;--r:452deg;--s:15px;--d:0.04s"></i>
+          <i style="--dx:101px;--dy:102px;--up:-127px;--r:584deg;--s:16px;--d:0.02s"></i>
+          <i style="--dx:-104px;--dy:-85px;--up:-162px;--r:262deg;--s:12px;--d:0.01s"></i>
+          <i style="--dx:-299px;--dy:-1px;--up:-162px;--r:671deg;--s:16px;--d:0.04s"></i>
+          <i style="--dx:104px;--dy:69px;--up:-102px;--r:489deg;--s:9px;--d:0.03s"></i>
+          <i style="--dx:60px;--dy:-84px;--up:-93px;--r:399deg;--s:13px;--d:0.02s"></i>
+          <i style="--dx:-36px;--dy:156px;--up:-155px;--r:265deg;--s:11px;--d:0.05s"></i>
+          <i style="--dx:109px;--dy:-70px;--up:-125px;--r:-400deg;--s:12px;--d:0.03s"></i>
+          <i style="--dx:-114px;--dy:152px;--up:-216px;--r:-217deg;--s:13px;--d:0.07s"></i>
+          <i style="--dx:-246px;--dy:23px;--up:-90px;--r:684deg;--s:15px;--d:0.04s"></i>
+          <i style="--dx:-214px;--dy:24px;--up:-192px;--r:-280deg;--s:11px;--d:0.05s"></i>
+        </div>
+        </div>
 
         <article class="card card-rust">
           <div class="card-head">
@@ -1021,6 +1240,45 @@
     </footer>
   </div>
 
+  <div class="impact-flash" aria-hidden="true"></div>
+  <svg class="shatter" viewBox="-100 -100 200 200" aria-hidden="true">
+      <path pathLength="1" d="M0 0 L14.7 -2.1 L28.6 -2.0 L38.2 -1.3 L47.5 -2.5 L56.6 -7.8 L69.9 3.0 L79.7 -8.4 L94.5 6.9"/>
+      <path pathLength="1" d="M0 0 L17.2 4.5 L32.8 10.7 L43.2 12.0 L51.1 24.2 L62.3 25.3 L77.4 26.9 L92.7 24.5 L100.9 30.5"/>
+      <path pathLength="1" d="M0 0 L8.6 8.1 L19.3 15.8 L29.1 29.0 L38.1 35.8 L44.6 48.6 L63.2 51.5 L79.5 59.5 L78.2 80.3"/>
+      <path pathLength="1" d="M0 0 L4.9 7.9 L13.8 21.1 L25.2 33.7 L31.1 48.2 L40.8 58.8 L41.3 77.9 L53.6 86.1 L57.7 94.8"/>
+      <path pathLength="1" d="M0 0 L3.2 16.1 L3.0 28.7 L5.8 37.6 L11.4 47.2 L4.5 57.9 L13.9 66.8 L4.3 80.7 L14.1 89.4 L5.2 104.3 L6.6 120.7 L21.7 130.6 L7.2 144.4"/>
+      <path pathLength="1" d="M0 0 L-2.2 10.4 L-5.7 20.9 L-7.6 35.2 L-11.2 43.6 L-16.2 55.0 L-23.4 71.2 L-26.1 84.6"/>
+      <path pathLength="1" d="M0 0 L-10.1 13.8 L-20.1 27.4 L-23.7 40.0 L-31.6 46.8 L-29.0 59.3 L-35.4 68.3"/>
+      <path pathLength="1" d="M0 0 L-6.2 6.6 L-13.6 13.1 L-22.6 16.8 L-29.2 31.1 L-38.8 37.5 L-45.0 48.6 L-67.9 47.5"/>
+      <path pathLength="1" d="M0 0 L-8.8 4.3 L-20.0 8.8 L-34.7 16.3 L-46.1 11.6 L-55.4 26.2 L-67.0 34.2 L-86.4 21.1 L-100.7 32.1"/>
+      <path pathLength="1" d="M0 0 L-10.5 -0.2 L-24.3 -0.4 L-36.0 4.3 L-52.4 -3.6 L-69.2 -1.7 L-85.6 -0.7 L-96.5 4.4"/>
+      <path pathLength="1" d="M0 0 L-8.9 -2.4 L-19.2 -7.4 L-36.4 -11.5 L-50.4 -23.6 L-70.3 -20.6"/>
+      <path pathLength="1" d="M0 0 L-9.1 -5.8 L-18.8 -17.1 L-33.8 -24.9 L-43.0 -37.2 L-51.8 -41.8 L-63.6 -54.5 L-80.2 -59.0"/>
+      <path pathLength="1" d="M0 0 L-5.9 -10.4 L-17.2 -24.3 L-19.6 -37.5 L-36.0 -45.3 L-42.6 -53.1 L-42.0 -74.1 L-46.7 -83.3 L-59.5 -96.4 L-68.6 -105.0"/>
+      <path pathLength="1" d="M0 0 L-3.8 -17.3 L-4.6 -31.1 L-7.1 -43.8 L-19.3 -57.7 L-21.5 -68.8"/>
+      <path pathLength="1" d="M0 0 L1.1 -11.3 L4.7 -21.0 L3.7 -33.5 L10.4 -46.8 L13.4 -59.2 L9.5 -73.6 L0.2 -88.0 L4.3 -100.8 L21.1 -107.9 L13.7 -119.7"/>
+      <path pathLength="1" d="M0 0 L6.5 -10.0 L15.5 -20.8 L19.8 -29.9 L23.3 -41.0 L34.2 -53.0 L45.7 -62.1 L49.9 -80.1 L58.9 -91.5 L70.9 -99.8"/>
+      <path pathLength="1" d="M0 0 L11.0 -7.5 L23.3 -16.5 L33.2 -32.0 L49.6 -33.9 L53.6 -54.8 L65.1 -57.4 L69.1 -67.2 L83.4 -65.6 L100.0 -70.1"/>
+      <path pathLength="1" d="M0 0 L13.1 -7.3 L30.4 -9.6 L40.8 -13.1 L50.5 -22.8 L69.2 -24.5 L75.9 -35.6 L87.3 -43.3 L96.7 -48.6 L106.2 -63.5"/>
+      <path pathLength="1" d="M14.5 -3.4 L14.1 -1.0 L14.4 1.2 L12.7 3.1"/>
+      <path pathLength="1" d="M-0.4 13.9 L-2.5 13.4 L-4.7 13.3 L-7.1 13.1 L-8.2 10.7 L-9.6 9.1 L-11.6 8.0 L-12.1 5.8"/>
+      <path pathLength="1" d="M-12.9 3.2 L-13.5 1.2 L-13.5 -1.0 L-14.2 -3.3"/>
+      <path pathLength="1" d="M12.1 24.9 L8.4 27.6 L3.8 27.4 L-0.6 31.1 L-5.3 29.8"/>
+      <path pathLength="1" d="M-28.8 -11.4 L-26.4 -15.6 L-22.8 -18.8 L-19.3 -22.0 L-14.9 -23.5 L-11.2 -25.9 L-6.9 -27.1"/>
+      <path pathLength="1" d="M3.1 -27.8 L8.4 -30.5 L13.1 -28.9 L17.0 -25.7"/>
+      <path pathLength="1" d="M30.9 9.1 L26.3 12.5 L24.2 16.5 L20.1 19.0 L18.0 23.3"/>
+      <path pathLength="1" d="M14.5 45.6 L7.5 49.5 L-0.3 48.6 L-8.3 50.5 L-15.2 45.7 L-22.1 42.7"/>
+      <path pathLength="1" d="M-35.0 38.8 L-42.0 34.0 L-46.2 26.6 L-50.2 19.3 L-54.0 11.4 L-51.0 2.7"/>
+      <path pathLength="1" d="M-10.9 -53.5 L-2.1 -49.0 L5.9 -51.9 L13.9 -50.1 L22.7 -49.9 L30.1 -45.5 L37.0 -40.3"/>
+      <path pathLength="1" d="M50.3 -18.6 L48.8 -9.7 L48.1 -1.9 L48.6 5.7 L48.9 13.8 L44.3 20.4 L45.6 30.4"/>
+      <path pathLength="1" d="M31.4 43.3 L23.5 46.3 L14.7 45.6 L8.4 53.8 L-0.1 54.1 L-8.2 51.4"/>
+      <path pathLength="1" d="M70.3 31.0 L62.7 40.4 L57.4 51.3 L52.4 64.3 L38.4 65.9 L30.1 77.4 L18.2 84.1"/>
+      <path pathLength="1" d="M-9.2 81.8 L-22.2 80.4 L-33.7 74.2 L-45.1 68.3 L-50.3 55.0 L-59.0 47.1"/>
+      <path pathLength="1" d="M-77.6 22.8 L-73.1 9.5 L-74.3 -2.1 L-75.7 -14.2 L-77.4 -27.6"/>
+      <path pathLength="1" d="M-59.8 -53.5 L-50.3 -61.7 L-40.0 -68.8 L-27.1 -70.0 L-18.0 -83.1"/>
+      <path pathLength="1" d="M18.5 -71.5 L31.7 -72.9 L45.2 -70.9 L57.0 -64.4 L61.3 -50.4 L66.4 -39.1 L71.0 -27.9 L83.7 -18.5"/>
+      <path pathLength="1" d="M79.2 13.3 L81.3 27.3 L66.8 34.8 L67.6 50.1"/>
+  </svg>
   <button class="to-top" type="button" aria-label="Back to top">&uarr;</button>
 
   <!-- You read source. Respect. Try clicking the moon. Nine times. -->
@@ -1184,13 +1442,53 @@
           });
         });
       }
+      const slot = document.querySelector('.flagship-slot');
+      const wideMouse = matchMedia('(min-width: 64rem) and (hover: hover) and (pointer: fine)').matches;
+      if (slot && !calm && wideMouse && 'IntersectionObserver' in window) {
+        const card = slot.querySelector('.card-flagship');
+        const wrap = document.querySelector('.wrap');
+        const flash = document.querySelector('.impact-flash');
+        const shatter = document.querySelector('.shatter');
+        card.classList.add('drop-armed');
+        card.addEventListener('animationend', (e) => {
+          if (e.animationName === 'flagship-spin') {
+            const r = card.getBoundingClientRect();
+            const ix = (r.left + r.width / 2) + 'px';
+            const iy = (r.top + r.height / 2) + 'px';
+            flash.style.setProperty('--ix', ix);
+            flash.style.setProperty('--iy', iy);
+            shatter.style.setProperty('--ix', ix);
+            shatter.style.setProperty('--iy', iy);
+            wrap.classList.add('quake');
+            slot.classList.add('cracked');
+            flash.classList.add('on');
+            shatter.classList.add('on');
+          } else if (e.animationName === 'flagship-land') {
+            card.classList.remove('dropping', 'drop-armed');
+          }
+        });
+        wrap.addEventListener('animationend', (e) => {
+          if (e.animationName === 'quake') wrap.classList.remove('quake');
+          else if (e.animationName === 'cracks-fade') slot.classList.remove('cracked');
+        });
+        flash.addEventListener('animationend', () => flash.classList.remove('on'));
+        shatter.addEventListener('animationend', (e) => {
+          if (e.animationName === 'shatter-fade') shatter.classList.remove('on');
+        });
+        const watcher = new IntersectionObserver((entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          watcher.disconnect();
+          setTimeout(() => card.classList.add('dropping'), 350);
+        }, { threshold: .4 });
+        watcher.observe(card);
+      }
       if (!calm && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); }
           });
         }, { rootMargin: '9999px 0px -8% 0px' });
-        document.querySelectorAll('.card, .featured, .elsewhere-list li, .section-head, .section-note, .chips')
+        document.querySelectorAll('.card:not(.drop-armed), .featured, .elsewhere-list li, .section-head, .section-note, .chips')
           .forEach((el) => {
             if (el.getBoundingClientRect().top > innerHeight * .92) {
               el.classList.add('reveal');
