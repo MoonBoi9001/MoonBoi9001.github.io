@@ -466,8 +466,8 @@
   .card-flagship.drop-armed { opacity: 0; }
   /* Gravity: a body starting 10 camera-heights out and falling with constant acceleration has an
      apparent size of 1 / (1 + 10(1 - t^2)) of full size at time t. That curve, sampled into a
-     linear() easing, shapes the shell's growth from a 3% speck to full size; the card inside spins
-     at a steady rate the whole way. */
+     linear() easing, shapes the shell's growth from a 3% speck to full size. The card inside makes
+     2 pitch turns, slow while it is a speck and quickest just before it hits. */
   .drop-shell:has(.dropping) {
     z-index: 5;
     animation: flagship-fall 2.7s linear(0, 0, 0.0001, 0.0002, 0.0004, 0.0006, 0.0008, 0.0011, 0.0014, 0.0018, 0.0023, 0.0028, 0.0033, 0.0039, 0.0045, 0.0053, 0.006, 0.0069, 0.0077, 0.0087, 0.0097, 0.0108, 0.012, 0.0133, 0.0147, 0.0161, 0.0177, 0.0193, 0.0211, 0.0229, 0.025, 0.0271, 0.0294, 0.0319, 0.0345, 0.0373, 0.0404, 0.0436, 0.0472, 0.051, 0.0551, 0.0595, 0.0643, 0.0696, 0.0753, 0.0816, 0.0886, 0.0962, 0.1047, 0.1141, 0.1247, 0.1366, 0.1501, 0.1656, 0.1834, 0.2043, 0.229, 0.2586, 0.2947, 0.3397, 0.3975, 0.4743, 0.581, 0.7397, 1) both;
@@ -478,11 +478,11 @@
   }
   .card-flagship.dropping {
     animation:
-      flagship-spin 2.7s linear both,
+      flagship-spin 2.7s cubic-bezier(.55, 0, 1, .55) both,
       flagship-land .5s 2.7s ease-out forwards;
   }
   @keyframes flagship-spin {
-    0% { opacity: 0; transform: rotateX(-360deg); filter: blur(1.5px); }
+    0% { opacity: 0; transform: rotateX(-720deg); filter: blur(1.5px); }
     8% { opacity: 1; }
     60% { filter: blur(.6px); }
     85% { filter: blur(0) drop-shadow(0 0 22px rgba(217, 185, 108, .55)); }
