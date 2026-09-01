@@ -715,7 +715,7 @@
   /* The live map replaces the picture on wide mouse-driven screens (added by script). It is
      decorative: clicks and scrolling pass straight through to the surrounding link. */
   .featured-map iframe {
-    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+    position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0;
     pointer-events: none; opacity: 0; transition: opacity .6s ease;
   }
   .featured-map iframe.ready { opacity: 1; }
@@ -1466,6 +1466,15 @@
         live.tabIndex = -1;
         live.setAttribute('aria-hidden', 'true');
         live.addEventListener('load', () => live.classList.add('ready'));
+        // Lay the page out 1,200px wide, as a visitor would see it, then shrink it to the box.
+        const fitFrame = () => {
+          const k = mapBox.clientWidth / 1200;
+          live.style.width = '1200px';
+          live.style.height = Math.round(mapBox.clientHeight / k) + 'px';
+          live.style.transform = 'scale(' + k + ')';
+        };
+        fitFrame();
+        new ResizeObserver(fitFrame).observe(mapBox);
         mapBox.append(live);
         // Only let the map draw while it is on screen; its loop otherwise makes scrolling stutter.
         const tell = (state) => live.contentWindow && live.contentWindow.postMessage({ mapEmbed: state }, '*');
