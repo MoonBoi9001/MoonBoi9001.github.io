@@ -457,6 +457,98 @@
     0%, 55% { transform: translateX(-80%); }
     85%, 100% { transform: translateX(80%); }
   }
+
+  /* Flagship entrance: on wide, mouse-driven screens the card drops in from above the page,
+     flips once, and lands hard enough to crack the ground around it. Armed only from JS, which
+     skips touch screens, narrow layouts and anyone who asked for reduced motion. */
+  .flagship-slot { position: relative; perspective: 1100px; }
+  .drop-shell { position: relative; z-index: 3; transform-style: preserve-3d; }
+  .card-flagship.drop-armed { opacity: 0; }
+  /* Gravity: a body starting 10 camera-heights out and falling with constant acceleration has an
+     apparent size of 1 / (1 + 10(1 - t^2)) of full size at time t. That curve, sampled into a
+     linear() easing, shapes the shell's growth from a 3% speck to full size; the card inside spins
+     at a steady rate the whole way. */
+  .drop-shell:has(.dropping) {
+    z-index: 5;
+    animation: flagship-fall 2.7s linear(0, 0, 0.0001, 0.0002, 0.0004, 0.0006, 0.0008, 0.0011, 0.0014, 0.0018, 0.0023, 0.0028, 0.0033, 0.0039, 0.0045, 0.0053, 0.006, 0.0069, 0.0077, 0.0087, 0.0097, 0.0108, 0.012, 0.0133, 0.0147, 0.0161, 0.0177, 0.0193, 0.0211, 0.0229, 0.025, 0.0271, 0.0294, 0.0319, 0.0345, 0.0373, 0.0404, 0.0436, 0.0472, 0.051, 0.0551, 0.0595, 0.0643, 0.0696, 0.0753, 0.0816, 0.0886, 0.0962, 0.1047, 0.1141, 0.1247, 0.1366, 0.1501, 0.1656, 0.1834, 0.2043, 0.229, 0.2586, 0.2947, 0.3397, 0.3975, 0.4743, 0.581, 0.7397, 1) both;
+  }
+  @keyframes flagship-fall {
+    0% { transform: scale(.03); }
+    100% { transform: scale(1); }
+  }
+  .card-flagship.dropping {
+    animation:
+      flagship-spin 2.7s linear both,
+      flagship-land .5s 2.7s ease-out forwards;
+  }
+  @keyframes flagship-spin {
+    0% { opacity: 0; transform: rotateX(-360deg); filter: blur(1.5px); }
+    8% { opacity: 1; }
+    60% { filter: blur(.6px); }
+    85% { filter: blur(0) drop-shadow(0 0 22px rgba(217, 185, 108, .55)); }
+    100% { opacity: 1; transform: rotateX(0deg); filter: blur(0) drop-shadow(0 0 0 transparent); }
+  }
+  @keyframes flagship-land {
+    0% { transform: scaleY(.9) scaleX(1.06); box-shadow: 0 0 90px 10px rgba(217, 185, 108, .55); }
+    45% { transform: scaleY(1.03) scaleX(.985); }
+    100% { transform: none; box-shadow: 0 0 26px rgba(217, 185, 108, .12); }
+  }
+  /* Shadow on the floor that grows and darkens as the card gets closer. */
+  .flagship-slot::before {
+    content: "";
+    position: absolute;
+    inset: 4%;
+    border-radius: 24px;
+    background: rgba(0, 0, 0, .85);
+    box-shadow: 0 0 60px 30px rgba(0, 0, 0, .85);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .flagship-slot:has(.dropping)::before { animation: ground-shadow 2.7s linear(0, 0, 0.0001, 0.0002, 0.0004, 0.0006, 0.0008, 0.0011, 0.0014, 0.0018, 0.0023, 0.0028, 0.0033, 0.0039, 0.0045, 0.0053, 0.006, 0.0069, 0.0077, 0.0087, 0.0097, 0.0108, 0.012, 0.0133, 0.0147, 0.0161, 0.0177, 0.0193, 0.0211, 0.0229, 0.025, 0.0271, 0.0294, 0.0319, 0.0345, 0.0373, 0.0404, 0.0436, 0.0472, 0.051, 0.0551, 0.0595, 0.0643, 0.0696, 0.0753, 0.0816, 0.0886, 0.0962, 0.1047, 0.1141, 0.1247, 0.1366, 0.1501, 0.1656, 0.1834, 0.2043, 0.229, 0.2586, 0.2947, 0.3397, 0.3975, 0.4743, 0.581, 0.7397, 1) both; }
+  @keyframes ground-shadow {
+    0% { opacity: 0; transform: scale(.03); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+  .work-grid.quake { animation: quake .5s ease-out; }
+  @keyframes quake {
+    0%, 100% { transform: none; }
+    15% { transform: translate(9px, -7px); }
+    30% { transform: translate(-8px, 6px); }
+    45% { transform: translate(6px, 3px); }
+    60% { transform: translate(-4px, -3px); }
+    80% { transform: translate(2px, 1px); }
+  }
+  .cracks {
+    position: absolute;
+    top: -24%;
+    left: -24%;
+    width: 148%;
+    height: 148%;
+    overflow: visible;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .cracks path, .cracks .wave {
+    fill: none;
+    stroke: rgba(217, 185, 108, .85);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .cracks path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .cracks .branch { stroke-width: 1.2px; stroke: rgba(217, 185, 108, .55); }
+  .cracks .wave { stroke-width: 2px; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .cracked .cracks { opacity: 1; animation: cracks-fade 1.4s 1.3s ease-out forwards; }
+  .cracked .cracks path { stroke-dashoffset: 0; transition: stroke-dashoffset .45s ease-out; }
+  .cracked .cracks .branch { transition-delay: .25s; }
+  .cracked .cracks .wave { animation: shockwave .7s ease-out forwards; }
+  @keyframes cracks-fade { to { opacity: 0; } }
+  @keyframes shockwave {
+    from { transform: scale(1); opacity: .7; }
+    to { transform: scale(1.32); opacity: 0; }
+  }
   .card { position: relative; }
   .egg {
     position: absolute;
@@ -782,6 +874,8 @@
       <p class="section-note">The indexing payments stack on The Graph, end to end. All code is public.</p>
 
       <div class="work-grid">
+        <div class="flagship-slot">
+        <div class="drop-shell">
         <article class="card card-flagship">
           <div class="card-head">
             <h3><a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">subgraph-dips-indexer-selection</a></h3>
@@ -800,6 +894,27 @@
           </p>
           <svg class="egg" viewBox="0 0 44 34"><g fill="#d9b96c"><rect class="e-b1" x="6" y="14" width="7" height="16" rx="1.5"/><rect class="e-b2" x="18" y="6" width="7" height="24" rx="1.5"/><rect class="e-b3" x="30" y="20" width="7" height="10" rx="1.5"/></g></svg>
         </article>
+        </div>
+        <svg class="cracks" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse class="wave" cx="50" cy="50" rx="34" ry="34"/>
+          <path pathLength="1" d="M50 50 L44 41 L38 36 L31 29 L24 22 L17 15 L9 8 L2 1"/>
+          <path pathLength="1" d="M50 50 L58 44 L67 40 L74 33 L82 28 L90 21 L98 12"/>
+          <path pathLength="1" d="M50 50 L54 58 L61 63 L64 71 L72 78 L79 87 L86 98"/>
+          <path pathLength="1" d="M50 50 L43 57 L36 60 L30 68 L23 74 L15 83 L7 97"/>
+          <path pathLength="1" d="M50 50 L51 39 L49 30 L52 21 L48 12 L51 2"/>
+          <path pathLength="1" d="M50 50 L39 51 L31 49 L21 52 L11 50 L1 52"/>
+          <path pathLength="1" d="M50 50 L61 52 L70 50 L79 53 L89 51 L99 53"/>
+          <path pathLength="1" d="M50 50 L52 61 L49 70 L52 79 L49 90 L52 99"/>
+          <path class="branch" pathLength="1" d="M17 15 L12 18 L6 17"/>
+          <path class="branch" pathLength="1" d="M82 28 L86 33 L93 35"/>
+          <path class="branch" pathLength="1" d="M15 83 L10 80 L4 84"/>
+          <path class="branch" pathLength="1" d="M79 87 L84 89 L87 95"/>
+          <path class="branch" pathLength="1" d="M11 50 L8 56 L2 58"/>
+          <path class="branch" pathLength="1" d="M89 51 L92 45 L98 44"/>
+          <path class="branch" pathLength="1" d="M48 12 L43 8 L41 2"/>
+          <path class="branch" pathLength="1" d="M49 90 L55 94 L57 99"/>
+        </svg>
+        </div>
 
         <article class="card card-rust">
           <div class="card-head">
@@ -1184,13 +1299,38 @@
           });
         });
       }
+      const slot = document.querySelector('.flagship-slot');
+      const wideMouse = matchMedia('(min-width: 64rem) and (hover: hover) and (pointer: fine)').matches;
+      if (slot && !calm && wideMouse && 'IntersectionObserver' in window) {
+        const card = slot.querySelector('.card-flagship');
+        const grid = slot.parentElement;
+        card.classList.add('drop-armed');
+        card.addEventListener('animationend', (e) => {
+          if (e.animationName === 'flagship-spin') {
+            grid.classList.add('quake');
+            slot.classList.add('cracked');
+          } else if (e.animationName === 'flagship-land') {
+            card.classList.remove('dropping', 'drop-armed');
+          }
+        });
+        grid.addEventListener('animationend', (e) => {
+          if (e.animationName === 'quake') grid.classList.remove('quake');
+          else if (e.animationName === 'cracks-fade') slot.classList.remove('cracked');
+        });
+        const watcher = new IntersectionObserver((entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          watcher.disconnect();
+          setTimeout(() => card.classList.add('dropping'), 350);
+        }, { threshold: .4 });
+        watcher.observe(card);
+      }
       if (!calm && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); }
           });
         }, { rootMargin: '9999px 0px -8% 0px' });
-        document.querySelectorAll('.card, .featured, .elsewhere-list li, .section-head, .section-note, .chips')
+        document.querySelectorAll('.card:not(.drop-armed), .featured, .elsewhere-list li, .section-head, .section-note, .chips')
           .forEach((el) => {
             if (el.getBoundingClientRect().top > innerHeight * .92) {
               el.classList.add('reveal');
