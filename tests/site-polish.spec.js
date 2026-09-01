@@ -44,6 +44,19 @@ test.describe('wide screen with a mouse', () => {
     });
     expect(centred.dx).toBeLessThan(.08);
     expect(centred.dy).toBeLessThan(.08);
+    // The map only draws while it is on screen, so scrolling elsewhere stays smooth.
+    const frames = () => mapFrame.evaluate(() => window.__mapFrames || 0);
+    await page.locator('.featured').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    expect(await frames()).toBeGreaterThan(5);
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.waitForTimeout(300);
+    const parked = await frames();
+    await page.waitForTimeout(500);
+    expect(await frames()).toBe(parked);
+    await page.locator('.featured').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    expect(await frames()).toBeGreaterThan(parked);
   });
 });
 

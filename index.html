@@ -1467,6 +1467,11 @@
         live.setAttribute('aria-hidden', 'true');
         live.addEventListener('load', () => live.classList.add('ready'));
         mapBox.append(live);
+        // Only let the map draw while it is on screen; its loop otherwise makes scrolling stutter.
+        const tell = (state) => live.contentWindow && live.contentWindow.postMessage({ mapEmbed: state }, '*');
+        let onScreen = true;
+        new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; tell(onScreen ? 'run' : 'pause'); }).observe(live);
+        live.addEventListener('load', () => tell(onScreen ? 'run' : 'pause'));
       }
       const slot = document.querySelector('.flagship-slot');
       if (slot && !calm && wideMouse && 'IntersectionObserver' in window) {

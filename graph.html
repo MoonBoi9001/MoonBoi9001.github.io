@@ -606,8 +606,22 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
 
       // ---------- render ----------
       let last = performance.now();
+      // Embedded on the home page the map is decoration, so it draws at most 30 times a
+      // second, skips the blur glow, and stops entirely while the home page tells it it is off
+      // screen; otherwise its drawing competes with the page's own scrolling.
+      const GLOW = !EMBED;
+      let rafId = null, embedPaused = false;
+      function schedule() { if (rafId === null && !embedPaused) rafId = requestAnimationFrame(frame); }
+      if (EMBED) window.addEventListener('message', (e) => {
+        if (!e.data || !e.data.mapEmbed) return;
+        embedPaused = e.data.mapEmbed === 'pause';
+        if (!embedPaused) { last = performance.now(); schedule(); }
+      });
       function frame(now) {
+        rafId = null;
+        if (EMBED && now - last < 30) { schedule(); return; }
         const dt = Math.min(now - last, 60); last = now;
+        window.__mapFrames = (window.__mapFrames || 0) + 1;
         if (camTarget) {
           cam.x += (camTarget.x - cam.x) * 0.12;
           cam.y += (camTarget.y - cam.y) * 0.12;
@@ -650,7 +664,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.beginPath();
           ctx.arc(s.x, s.y, rad, 0, 7);
           ctx.fillStyle = col;
-          ctx.shadowBlur = p.big ? 12 : 6; ctx.shadowColor = col;
+          if (GLOW) { ctx.shadowBlur = p.big ? 12 : 6; ctx.shadowColor = col; }
           ctx.globalAlpha = p.reg ? 0.5 : 0.95;
           ctx.fill();
           ctx.shadowBlur = 0; ctx.globalAlpha = 1;
@@ -678,8 +692,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           grad.addColorStop(0, mix(nd.color, '#ffffff', 0.35));
           grad.addColorStop(1, nd.color);
           ctx.fillStyle = grad;
-          ctx.shadowBlur = (isSel || isHov || nd.act > 0.1) ? 22 : 9;
-          ctx.shadowColor = nd.color;
+          if (GLOW) { ctx.shadowBlur = (isSel || isHov || nd.act > 0.1) ? 22 : 9; ctx.shadowColor = nd.color; }
           ctx.fill();
           ctx.shadowBlur = 0;
           if (isSel || isHov) {
@@ -718,7 +731,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.fillText(label, lx, ly);
           ctx.globalAlpha = 1;
         });
-        requestAnimationFrame(frame);
+        schedule();
       }
       function roundRect(x, y, w, h, rad) {
         ctx.beginPath();
@@ -1381,7 +1394,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
       applyTickerH();
       resize();
       fit(false);
-      requestAnimationFrame(frame);
+      schedule();
       // gentle intro: a few ambient events
       setTimeout(() => { for (let i = 0; i < 4; i++) setTimeout(ambientEvent, i * 250); }, 400);
     </script>
