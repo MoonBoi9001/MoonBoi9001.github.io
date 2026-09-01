@@ -35,6 +35,9 @@
     --green: #86d9a2;
     --mono: "IBM Plex Mono", ui-monospace, monospace;
     --serif: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    --moon-top: clamp(5rem, 12vh, 8rem);
+    --moon-right: clamp(1rem, 9vw, 8rem);
+    --moon-size: clamp(90px, 13vw, 160px);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -87,9 +90,9 @@
     position: absolute;
     cursor: pointer;
     z-index: 1;
-    top: clamp(5rem, 12vh, 8rem);
-    right: clamp(1rem, 9vw, 8rem);
-    width: clamp(90px, 13vw, 160px);
+    top: var(--moon-top);
+    right: var(--moon-right);
+    width: var(--moon-size);
     aspect-ratio: 1;
     border-radius: 50%;
     background: radial-gradient(circle at 38% 34%, var(--halo) 0%, #d9d6c6 55%, #b7b4a4 100%);
@@ -101,6 +104,22 @@
     transition: box-shadow .6s, transform .6s;
   }
   .moon { overflow: hidden; }
+  .moon-phase {
+    position: absolute;
+    z-index: 1;
+    top: calc(var(--moon-top) + var(--moon-size) + .8rem);
+    right: calc(var(--moon-right) + var(--moon-size) / 2);
+    translate: 50% 0;
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    line-height: 1.5;
+    white-space: nowrap;
+    text-align: center;
+    color: var(--moonlight-dim);
+    pointer-events: none;
+    animation: rise 2.2s cubic-bezier(.22,1,.36,1) both;
+  }
   .moon-shade {
     position: absolute;
     inset: -3%;
@@ -109,6 +128,19 @@
     filter: blur(2px);
     z-index: 1;
     pointer-events: none;
+  }
+  /* Between phone and wide desktop widths the moon hangs over the header column, so the
+     name, tagline and availability pill stop short of the moon and its caption. The margin
+     is how far the header's right edge reaches past the moon's left edge, or 0 when it
+     doesn't; the header's right edge is 50rem past the page wrapper's left edge, and the
+     wrapper is left-anchored with 1.5rem of padding until it hits its 76rem maximum. */
+  @media (min-width: 44.01rem) {
+    header > h1, header > .tagline, header > .available {
+      margin-right: clamp(0px,
+        min(100vw - 1.5rem, max(1.5rem, (100vw - 76rem) / 2) + 50rem)
+          - (100vw - var(--moon-right) - var(--moon-size)) + 1.2rem,
+        60%);
+    }
   }
   .moon.super {
     transform: scale(1.12);
@@ -169,8 +201,8 @@
   .moon::before { width: 18%; height: 18%; top: 28%; left: 22%; }
   .moon::after  { width: 12%; height: 12%; top: 58%; left: 55%; }
   @media (max-width: 44rem) {
-    .moon { width: 76px; top: 4.5rem; right: 1.2rem; }
-    header { padding-top: 8.5rem; }
+    :root { --moon-top: 4.5rem; --moon-right: 1.2rem; --moon-size: 76px; }
+    .moon-phase { font-size: .62rem; right: var(--moon-right); translate: none; text-align: right; }
   }
   @keyframes rise {
     from { transform: translateY(24px); opacity: 0; }
@@ -222,6 +254,10 @@
   header {
     padding: clamp(3rem, 9vh, 6rem) 0 0;
     max-width: 50rem;
+  }
+  /* On phones the moon and its caption sit above the header, so push the name below them. */
+  @media (max-width: 44rem) {
+    header { padding-top: 6rem; }
   }
   h1 {
     cursor: pointer;
@@ -880,7 +916,7 @@
 
   @media print {
     body { background: #fff !important; color: #111 !important; font-weight: 400; }
-    .stars, .aurora, .moon, .nav-links, .egg, .chip-tip, .stat-tip, .to-top,
+    .stars, .aurora, .moon, .moon-phase, .nav-links, .egg, .chip-tip, .stat-tip, .to-top,
     .available::before, .contact-row button, #contact { display: none !important; }
     .card, .stat, .stats, .featured, .chips span, .available { background: #fff !important; box-shadow: none !important; border-color: #bbb !important; }
     h1, h2, .card-head h3, .stat b, .edu .deg { color: #000 !important; }
@@ -904,6 +940,7 @@
   <div class="stars" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true"></div>
   <div class="moon" aria-hidden="true"></div>
+  <p class="moon-phase">tonight's moon is a<br><span></span></p>
 
   <div class="wrap">
     <nav>
@@ -1367,7 +1404,7 @@
           window.open(link.href, '_blank', 'noopener');
         });
       });
-      // shade the moon to tonight's actual phase (full moon stays clean)
+      // shade the moon to tonight's actual phase (full moon stays clean) and name it
       (() => {
         const SYNODIC = 29.530588853;
         const NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
@@ -1379,6 +1416,9 @@
           shade.style.transform = 'translateX(' + tx.toFixed(1) + '%)';
           moon.appendChild(shade);
         }
+        const phases = ['new moon', 'waxing crescent', 'first quarter moon', 'waxing gibbous',
+          'full moon', 'waning gibbous', 'last quarter moon', 'waning crescent'];
+        document.querySelector('.moon-phase span').textContent = phases[Math.round(f * 8) % 8];
       })();
       const navName = document.querySelector('.nav-name');
       let landing = false;
