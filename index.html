@@ -138,7 +138,7 @@
      doesn't; the header's right edge is 50rem past the page wrapper's left edge, and the
      wrapper is left-anchored with 1.5rem of padding until it hits its 76rem maximum. */
   @media (min-width: 44.01rem) {
-    header > h1, header > .tagline, header > .available {
+    header > h1, header > .edu, header > .tagline, header > .available {
       margin-right: clamp(0px,
         min(100vw - 1.5rem, max(1.5rem, (100vw - 76rem) / 2) + 50rem)
           - (100vw - var(--moon-right) - var(--moon-size)) + 1.2rem,
@@ -318,10 +318,10 @@
   }
   .bio + .bio { margin-top: 1rem; }
   .edu {
-    margin-top: .9rem;
+    margin-top: .7rem;
     font-size: .92rem;
     color: var(--moonlight-dim);
-    animation: fadeup .9s ease-out .55s both;
+    animation: fadeup .9s ease-out .22s both;
   }
   .edu .deg { color: var(--ice); font-weight: 700; }
   @media (min-width: 44rem) {
@@ -956,6 +956,7 @@
 
     <header>
       <h1 id="name" title="LinkedIn">Samuel Metcalfe</h1>
+      <p class="edu"><span class="qual"><span class="deg">MSc Financial Technology</span> (1st Class Hons.), University of Exeter</span> &middot; <span class="qual"><span class="deg">BSc Financial Mathematics</span>, University of Kent</span></p>
       <p class="tagline">Software engineer: reliable distributed systems, payments infrastructure and blockchain protocols.</p>
       <button class="available" type="button" title="Click to copy my email address">Open to remote software engineering, infrastructure, protocol and research roles</button>
       <p class="bio">
@@ -980,7 +981,6 @@
         My work then moved from research to engineering to build out more of the Direct
         Indexing Payments (DIPs) stack.
       </p>
-      <p class="edu"><span class="qual"><span class="deg">MSc Financial Technology</span> (1st Class Hons.), University of Exeter</span> &middot; <span class="qual"><span class="deg">BSc Financial Mathematics</span>, University of Kent</span></p>
       <div class="contact-row">
         <a href="https://github.com/MoonBoi9001">GitHub</a>
         <a class="linkedin-link" href="#">LinkedIn</a>
