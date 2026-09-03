@@ -439,14 +439,7 @@
     transform: translateY(-3px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
   }
-  .card-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: .3rem;
-  }
+  .card-head { margin-bottom: .3rem; }
   .card-head h3 {
     font-size: 1.02rem;
     font-weight: 700;
@@ -462,17 +455,6 @@
     text-transform: uppercase;
     color: var(--card-accent);
     margin-bottom: .6rem;
-  }
-  .lang {
-    font-family: var(--mono);
-    font-size: .66rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--card-accent);
-    border: 1px solid color-mix(in srgb, var(--card-accent) 40%, transparent);
-    border-radius: 999px;
-    padding: .12rem .65rem;
-    white-space: nowrap;
   }
   .card-flagship {
     --card-accent: var(--accent);
@@ -931,7 +913,7 @@
     .card, .stat, .stats, .featured, .chips span, .available { background: #fff !important; box-shadow: none !important; border-color: #bbb !important; }
     h1, h2, .card-head h3, .stat b { color: #000 !important; }
     .tagline, .bio, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
-    .kicker, .nav-name, .role, .lang, .num, .featured .cta { color: #555 !important; }
+    .kicker, .nav-name, .role, .num, .featured .cta { color: #555 !important; }
     .available { color: #000 !important; }
     .chips span { color: #333 !important; }
     a { color: #000 !important; }
@@ -1013,9 +995,8 @@
         <article class="card card-flagship">
           <div class="card-head">
             <h3><a href="https://github.com/edgeandnode/subgraph-dips-indexer-selection">subgraph-dips-indexer-selection</a></h3>
-            <span class="lang">Python</span>
           </div>
-          <span class="role">Flagship &middot; who gets paid</span>
+          <span class="role">Flagship &middot; who gets paid &middot; Python</span>
           <p>
             Picks which indexers are offered paid indexing work. Taken from research prototype to
             production in Kubernetes. It replays about 1.7 billion gateway query records daily from
@@ -1087,9 +1068,8 @@
         <article class="card card-rust">
           <div class="card-head">
             <h3><a href="https://github.com/edgeandnode/dipper">dipper</a></h3>
-            <span class="lang">Rust</span>
           </div>
-          <span class="role">Paying side</span>
+          <span class="role">Paying side &middot; Rust</span>
           <p>
             Offers indexing agreements to indexers and manages each from proposal through settlement
             and withdrawal. Designed the agreement lifecycle state machine, chain listener and
@@ -1103,9 +1083,8 @@
         <article class="card card-python">
           <div class="card-head">
             <h3><a href="https://github.com/graphprotocol/rewards-eligibility-oracle">rewards-eligibility-oracle</a></h3>
-            <span class="lang">Python</span>
           </div>
-          <span class="role">Who earns rewards</span>
+          <span class="role">Who earns rewards &middot; Python</span>
           <p>
             Decides which indexers qualify for The Graph's indexing rewards and records the
             decisions on-chain on Arbitrum. Built the service and the criteria it enforces: a
@@ -1120,9 +1099,8 @@
         <article class="card card-rust">
           <div class="card-head">
             <h3><a href="https://github.com/graphprotocol/indexer-rs">indexer-rs</a></h3>
-            <span class="lang">Rust</span>
           </div>
-          <span class="role">Receiving side</span>
+          <span class="role">Receiving side &middot; Rust</span>
           <p>
             The service indexers run to receive, verify and answer agreement proposals over gRPC.
             Wrote 25 of 26 changes merged to its DIPs code from January to August 2026. Rebuilt the
@@ -1136,9 +1114,8 @@
         <article class="card card-ts">
           <div class="card-head">
             <h3><a href="https://github.com/graphprotocol/indexer">indexer</a></h3>
-            <span class="lang">TypeScript</span>
           </div>
-          <span class="role">Accepting side</span>
+          <span class="role">Accepting side &middot; TypeScript</span>
           <p>
             Moved on-chain acceptance onto its own parallel loop so agreements stopped expiring
             unaccepted under a backlog, then fixed 3 ways the agent quietly cost indexers money:
@@ -1151,9 +1128,8 @@
         <article class="card card-asc">
           <div class="card-head">
             <h3><a href="https://github.com/graphprotocol/indexing-payments-subgraph">indexing-payments-subgraph</a></h3>
-            <span class="lang">AssemblyScript</span>
           </div>
-          <span class="role">Shared record</span>
+          <span class="role">Shared record &middot; AssemblyScript</span>
           <p>
             Created the shared view of the on-chain record both sides read: indexes agreement and
             offer events from The Graph's contracts and serves them from a single GraphQL
@@ -1166,9 +1142,8 @@
         <article class="card card-infra">
           <div class="card-head">
             <h3>Node operations</h3>
-            <span class="lang">Infrastructure</span>
           </div>
-          <span class="role">Off the clock</span>
+          <span class="role">Off the clock &middot; Infrastructure</span>
           <p>
             I run a Graph Protocol indexer on mainnet and testnet, the same software I spent years
             building payment rails for, behind a fleet of 6 chain archive nodes and my Go load
@@ -1182,9 +1157,8 @@
         <article class="card card-llm">
           <div class="card-head">
             <h3>LLM GPU workstation</h3>
-            <span class="lang">AI</span>
           </div>
-          <span class="role">Off the clock</span>
+          <span class="role">Off the clock &middot; AI</span>
           <p>
             I built my own at-home LLM GPU workstation that serves self-hosted open-weight
             models with speculative decoding. I use this workstation to run some of my
@@ -1196,9 +1170,8 @@
         <article class="card card-quant">
           <div class="card-head">
             <h3>Options data pipeline</h3>
-            <span class="lang">Quant</span>
           </div>
-          <span class="role">Off the clock</span>
+          <span class="role">Off the clock &middot; Quant</span>
           <p>
             I run my own stock options data collection pipeline, tracking options prices for
             over 100,000 options contracts covering stocks in the S&amp;P 500. This pipeline's
@@ -1210,9 +1183,8 @@
         <article class="card card-sol">
           <div class="card-head">
             <h3>Smart contracts &amp; security</h3>
-            <span class="lang">Solidity &middot; EVM</span>
           </div>
-          <span class="role">Protocol security</span>
+          <span class="role">Protocol security &middot; Solidity &middot; EVM</span>
           <p>
             Fixed 5 high-severity findings from the TRST third-party security audit of The
             Graph's indexer service, and addressed 13 OpenZeppelin audit findings across The
@@ -1228,9 +1200,8 @@
         <article class="card card-ccip">
           <div class="card-head">
             <h3>Cross-chain GRT</h3>
-            <span class="lang">CCIP</span>
           </div>
-          <span class="role">Bridging</span>
+          <span class="role">Bridging &middot; CCIP</span>
           <p>
             Worked with <a class="chainlink" href="https://chain.link"><svg viewBox="0 0 37.8 43.6" aria-hidden="true"><path d="M18.9 0l-4 2.3L4.1 8.6 0 10.9v21.8l4.1 2.3 10.9 6.3 4 2.3 4-2.3 10.7-6.3 4.1-2.3V10.9l-4.1-2.3L23 2.3 18.9 0zM8.1 28.1V15.5l10.8-6.2 10.8 6.2v12.6l-10.8 6.2-10.8-6.2z"/></svg>Chainlink</a>
             to integrate GRT with CCIP for The Graph's cross-chain token launch and pushed for
