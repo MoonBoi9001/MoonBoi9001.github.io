@@ -279,15 +279,25 @@
     font-size: 1.12rem;
     animation: fadeup .9s ease-out .3s both;
   }
+  /* A button: clicking it copies the email address to the clipboard */
   .available {
     display: inline-block;
     margin-top: .9rem;
+    font: inherit;
     font-size: .92rem;
+    text-align: left;
     color: var(--green);
+    background: none;
     border: 1px solid rgba(134, 217, 162, .4);
     border-radius: 999px;
     padding: .3rem 1rem;
+    cursor: pointer;
+    transition: border-color .25s, box-shadow .25s;
     animation: fadeup .9s ease-out .4s both;
+  }
+  .available:hover, .available:focus-visible {
+    border-color: rgba(134, 217, 162, .8);
+    box-shadow: 0 0 12px rgba(134, 217, 162, .25);
   }
   .available::before {
     content: "";
@@ -955,7 +965,7 @@
     <header>
       <h1 id="name" title="LinkedIn">Samuel Metcalfe</h1>
       <p class="tagline">Software engineer: reliable distributed systems, payments infrastructure and blockchain protocols.</p>
-      <span class="available">Open to remote software engineering, infrastructure, protocol and research roles</span>
+      <button class="available" type="button" title="Click to copy my email address">Open to remote software engineering, infrastructure, protocol and research roles</button>
       <p class="bio">
         I am a Software Engineer with a background in Blockchain, Mathematics and Finance. My
         first real crypto foray started in 2014, when I started mining Litecoin on my home
@@ -1499,9 +1509,29 @@
         const slug = ['-samuel', 'metcalfe'].join('');
         window.open('https://' + host + '/in/' + slug, '_blank', 'noopener');
       });
+      // Assembled at click time so the address is not sitting in the page source for scrapers.
+      const emailAddress = () => ['contact', 'samuelmetcalfe'].join('@') + ['', 'com'].join('.');
+      // The open-to-work badge copies the address and shows it briefly in place of its text.
+      // If the browser refuses clipboard access the address stays visible to copy by hand.
+      const badge = document.querySelector('.available');
+      const badgeText = badge.textContent;
+      let badgeTimer = null;
+      badge.addEventListener('click', () => {
+        const addr = emailAddress();
+        const show = (msg, revertAfter) => {
+          badge.textContent = msg;
+          clearTimeout(badgeTimer);
+          badgeTimer = setTimeout(() => { badge.textContent = badgeText; }, revertAfter);
+        };
+        const write = navigator.clipboard ? navigator.clipboard.writeText(addr) : Promise.reject(new Error('no clipboard'));
+        write.then(
+          () => show('Copied ' + addr + ' to your clipboard', 2500),
+          () => show(addr, 8000)
+        );
+      });
       document.querySelectorAll('.email-reveal').forEach((btn) => {
         btn.addEventListener('click', () => {
-          const addr = ['contact', 'samuelmetcalfe'].join('@') + ['', 'com'].join('.');
+          const addr = emailAddress();
           const link = document.createElement('a');
           link.href = 'mailto:' + addr;
           link.textContent = addr;

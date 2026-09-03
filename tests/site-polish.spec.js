@@ -82,3 +82,18 @@ test.describe('phone', () => {
     await expect(page.locator('.featured-map iframe')).toHaveCount(0);
   });
 });
+
+test.describe('open-to-work badge', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
+  test('copies the email address and says so for a moment', async ({ page }) => {
+    await page.goto(url);
+    const badge = page.locator('.available');
+    const original = await badge.textContent();
+    await badge.click();
+    const address = 'contact@samuelmetcalfe.com';
+    await expect(badge).toContainText(address);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(address);
+    await expect(badge).toHaveText(original, { timeout: 5000 });
+  });
+});
