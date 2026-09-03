@@ -119,7 +119,10 @@
     color: var(--moonlight-dim);
     pointer-events: none;
     animation: rise 2.2s cubic-bezier(.22,1,.36,1) both;
+    transition: filter .25s;
   }
+  /* filter rather than opacity: the rise animation above holds opacity at its final value */
+  .moon-phase.hushed { filter: opacity(0); }
   .moon-shade {
     position: absolute;
     inset: -3%;
@@ -253,11 +256,13 @@
   /* ---- hero ---- */
   header {
     padding: clamp(3rem, 9vh, 6rem) 0 0;
-    max-width: 50rem;
+    max-width: 66rem;
   }
+  .tagline { max-width: 50rem; }
   /* On phones the moon and its caption sit above the header, so push the name below them. */
   @media (max-width: 44rem) {
     header { padding-top: 6rem; }
+    .bio { text-align: left; }
   }
   h1 {
     cursor: pointer;
@@ -297,19 +302,11 @@
   .bio {
     margin-top: 1.6rem;
     font-size: 1.05rem;
+    text-align: justify;
     color: var(--moonlight-dim);
     animation: fadeup .9s ease-out .5s both;
   }
-  .edu {
-    margin-top: .9rem;
-    font-size: .92rem;
-    color: var(--moonlight-dim);
-    animation: fadeup .9s ease-out .55s both;
-  }
-  .edu .deg { color: var(--ice); font-weight: 700; }
-  @media (min-width: 44rem) {
-    .edu .qual { white-space: nowrap; }
-  }
+  .bio + .bio { margin-top: 1rem; }
   .contact-row {
     margin-top: 2rem;
     display: flex;
@@ -497,8 +494,9 @@
   /* Flagship entrance: on wide, mouse-driven screens the card drops in from above the page,
      flips once, and lands hard enough to crack the ground around it. Armed only from JS, which
      skips touch screens, narrow layouts and anyone who asked for reduced motion. */
-  .flagship-slot { position: relative; perspective: 1100px; }
-  .drop-shell { position: relative; z-index: 3; transform-style: preserve-3d; }
+  /* Both wrappers are grids so the card stretches to the row height like its neighbours */
+  .flagship-slot { position: relative; perspective: 1100px; display: grid; }
+  .drop-shell { position: relative; z-index: 3; transform-style: preserve-3d; display: grid; }
   .card-flagship.drop-armed { opacity: 0; }
   /* Gravity: a body starting 10 camera-heights out and falling with constant acceleration has an
      apparent size of 1 / (1 + 10(1 - t^2)) of full size at time t. That curve, sampled into a
@@ -696,6 +694,8 @@
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
+  .card-llm { --card-accent: #e0c36a; }
+  .card-quant { --card-accent: #9ad07a; }
   a.chainlink {
     color: #7d9bf0;
     font-weight: 500;
@@ -716,8 +716,6 @@
     color: var(--moonlight-dim);
   }
 
-  .node-chips { --chip: var(--teal); margin-top: .9rem; gap: .5rem; }
-  .node-chips > span { font-size: .68rem; padding: .22rem .65rem; }
 
   /* ---- elsewhere ---- */
   .featured {
@@ -746,6 +744,8 @@
     border: 1px solid var(--edge);
     overflow: hidden;
     background: #0e1120;
+    /* Sized up front so the box does not grow when the lazily loaded picture arrives */
+    aspect-ratio: 800 / 480;
   }
   .featured-map img { display: block; width: 100%; height: 100%; object-fit: cover; }
   /* The live map replaces the picture on wide mouse-driven screens (added by script). It is
@@ -766,7 +766,7 @@
   }
   @media (max-width: 44rem) {
     .featured { flex-direction: column; }
-    .featured-map { width: 100%; min-width: 0; aspect-ratio: 800 / 480; }
+    .featured-map { width: 100%; min-width: 0; }
   }
   .elsewhere-list { list-style: none; }
   .elsewhere-list li {
@@ -919,8 +919,8 @@
     .stars, .aurora, .moon, .moon-phase, .nav-links, .egg, .chip-tip, .stat-tip, .to-top,
     .available::before, .contact-row button, #contact { display: none !important; }
     .card, .stat, .stats, .featured, .chips span, .available { background: #fff !important; box-shadow: none !important; border-color: #bbb !important; }
-    h1, h2, .card-head h3, .stat b, .edu .deg { color: #000 !important; }
-    .tagline, .bio, .edu, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
+    h1, h2, .card-head h3, .stat b { color: #000 !important; }
+    .tagline, .bio, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
     .kicker, .nav-name, .role, .lang, .num, .featured .cta { color: #555 !important; }
     .available { color: #000 !important; }
     .chips span { color: #333 !important; }
@@ -957,19 +957,27 @@
       <p class="tagline">Software engineer: reliable distributed systems, payments infrastructure and blockchain protocols.</p>
       <span class="available">Open to remote software engineering, infrastructure, protocol and research roles</span>
       <p class="bio">
-        I spent just over 2.5 years at
-        <a href="https://www.edgeandnode.com">Edge &amp; Node</a>, the founding team of
-        <a href="https://thegraph.com">The Graph</a>, promoted twice along the way. I joined
-        on the research side, designing the algorithm that decides which indexers earn paid
-        work and analysing the network data behind it, then moved onto the engineering track
-        to build Direct Indexing Payments (DIPs): a recurring per-second fee that pays
-        indexers, the independent operators whose servers index on-chain data and serve
-        billions of API queries per year, to keep particular datasets indexed and ready to
-        answer queries. I worked across the whole stack: the service that makes and prices
-        offers, the services indexers run to receive and accept them, and the oracle that
-        decides which indexers earn rewards.
+        I am a Software Engineer with a background in Blockchain, Mathematics and Finance. My
+        first real crypto foray started in 2014, when I started mining Litecoin on my home
+        built gaming PC. In my undergrad I studied Financial Mathematics at the University of
+        Kent from 2016 to 2019. I then took a year out to trade crypto full time, starting
+        with nothing but a &pound;1,300 interest-free overdraft. Within a year I had
+        turned this investment into enough to fund my masters course in Financial Technology
+        (FinTech) at the University of Exeter, which I walked away from with first class
+        honours.
       </p>
-      <p class="edu"><span class="qual"><span class="deg">MSc Financial Technology</span> (1st Class Hons.), University of Exeter</span> &middot; <span class="qual"><span class="deg">BSc Financial Mathematics</span>, University of Kent</span></p>
+      <p class="bio">
+        After the MSc I spent roughly 2.5 years working for myself in crypto, trading both on
+        and off-chain, and running self-hosted blockchain infrastructure from Hetzner
+        servers. This is what led me to my first official job at
+        <a href="https://www.edgeandnode.com">Edge &amp; Node</a>, building
+        <a href="https://thegraph.com">The Graph</a> (GRT), where I spent just over 2.5 years
+        and got promoted twice along the way. I started out as a research analyst, in a small
+        economics research team, designing the algorithm and latency linear regression model
+        that ranks protocol participants and decides which of them earn paid indexing work.
+        My work then moved from research to engineering to build out more of the Direct
+        Indexing Payments (DIPs) stack.
+      </p>
       <div class="contact-row">
         <a href="https://github.com/MoonBoi9001">GitHub</a>
         <a class="linkedin-link" href="#">LinkedIn</a>
@@ -978,16 +986,16 @@
     </header>
 
     <div class="stats">
-      <a class="stat" href="https://github.com/MoonBoi9001"><b>8</b><small>services and tools built or maintained across The Graph ecosystem</small><span class="stat-tip">The 6 services on this page, plus the CCIP bridge capacity monitor and the end-to-end payments test harness in local-network.</span></a>
-      <a class="stat" href="https://github.com/edgeandnode/dipper/pulls?q=is%3Apr+author%3AMoonBoi9001+is%3Amerged"><b>113<span style="font-size:1.1rem">/119</span></b><small>dipper changes merged Dec 2025 to Aug 2026, excluding bot dependency updates</small><span class="stat-tip">Click to see the merged pull requests on GitHub; the other 6 in that window were automated dependency updates.</span></a>
       <a class="stat" href="https://github.com/edgeandnode/subgraph-dips-indexer-selection"><b>1.7B</b><small>gateway query records replayed by the daily selection pipeline</small><span class="stat-tip">Documented in the selection service's README: the daily measurement job replays recent gateway query traffic from Redpanda.</span></a>
-      <div class="stat"><b>19</b><small>security findings fixed across The Graph, including a critical issuance vulnerability</small><span class="stat-tip">13 OpenZeppelin findings on The Graph's Horizon contracts and 5 high-severity findings from the TRST audit of the indexer service. Separately, investigated and patched a vulnerability, reported through The Graph's Immunefi bug bounty, that would have let an attacker earn protocol issuance without contest.</span></div>
       <div class="stat"><b>35M</b><small>chain RPC requests routed daily by my Go load balancer</small><span class="stat-tip">Measured from the balancer's own metrics: about 25,000 requests a minute averaged across Arbitrum, Avalanche, Ethereum and their testnets. Private repo; demo on request.</span></div>
+      <a class="stat" href="https://github.com/edgeandnode/dipper/pulls?q=is%3Apr+author%3AMoonBoi9001+is%3Amerged"><b>113<span style="font-size:1.1rem">/119</span></b><small>dipper changes merged Dec 2025 to Aug 2026, excluding bot dependency updates</small><span class="stat-tip">Click to see the merged pull requests on GitHub; the other 6 in that window were automated dependency updates.</span></a>
+      <div class="stat"><b>19</b><small>security findings fixed across The Graph, including a critical issuance vulnerability</small><span class="stat-tip">13 OpenZeppelin findings on The Graph's Horizon contracts and 5 high-severity findings from the TRST audit of the indexer service. Separately, investigated and patched a vulnerability, reported through The Graph's Immunefi bug bounty, that would have let an attacker earn protocol issuance without contest.</span></div>
+      <a class="stat" href="https://github.com/MoonBoi9001"><b>8</b><small>services and tools built or maintained across The Graph ecosystem</small><span class="stat-tip">The 6 services on this page, plus the CCIP bridge capacity monitor and the end-to-end payments test harness in local-network.</span></a>
     </div>
 
     <section id="work">
       <div class="section-head"><span class="num">01</span><h2>Selected work</h2></div>
-      <p class="section-note">The indexing payments stack on The Graph, end to end. All code is public.</p>
+      <p class="section-note">The indexing payments stack on The Graph, end to end.</p>
 
       <div class="work-grid">
         <div class="flagship-slot">
@@ -999,14 +1007,11 @@
           </div>
           <span class="role">Flagship &middot; who gets paid</span>
           <p>
-            Picks which indexers are offered agreements. Prototyped the scoring model in a
-            notebook, then rebuilt it as an always-on HTTP API on Kubernetes with a daily
-            pipeline replaying about 1.7 billion gateway query records from Redpanda. Designed
-            the statistical model at its core: a linear regression estimating each indexer's
-            true latency while controlling for the distance a query travels, with per-indexer
-            confidence intervals, fitted on balanced samples so busy indexers don't drown out
-            quiet ones. Selection then blends economic security, price, latency, uptime and
-            success rate, preferring indexers already synced so data is queryable sooner.
+            Picks which indexers are offered paid indexing work. Taken from research prototype to
+            production in Kubernetes. It replays about 1.7 billion gateway query records daily from
+            Redpanda, sampling them for my latency linear regression. Indexers are scored on
+            economic security, price, latency, uptime and success rate, preferring those already
+            synced, and agreements go to a group with a high decentralisation score.
           </p>
           <svg class="egg" viewBox="0 0 44 34"><g fill="#d9b96c"><rect class="e-b1" x="6" y="14" width="7" height="16" rx="1.5"/><rect class="e-b2" x="18" y="6" width="7" height="24" rx="1.5"/><rect class="e-b3" x="30" y="20" width="7" height="10" rx="1.5"/></g></svg>
         </article>
@@ -1076,13 +1081,11 @@
           </div>
           <span class="role">Paying side</span>
           <p>
-            The service that offers indexing agreements to indexers and manages each offer from
-            proposal through settlement and withdrawal. Effectively its only engineer from
-            December 2025 to August 2026, writing 113 of the 119 changes merged in that window
-            (the rest were automated dependency updates). Designed the agreement lifecycle state machine, the chain listener, and
-            the recovery paths that keep a dataset served when an indexer rejects, never answers,
-            or quietly stops indexing. Moved payments from off-chain signed vouchers to on-chain
-            escrow, coordinated across 4 repositories.
+            Offers indexing agreements to indexers and manages each from proposal through settlement
+            and withdrawal. Designed the agreement lifecycle state machine, chain listener and
+            recovery paths that keep a dataset served when an indexer rejects, never answers or
+            quietly stops indexing. Moved payments from off-chain signed vouchers to on-chain escrow
+            across 4 repositories.
           </p>
           <svg class="egg" viewBox="0 0 44 34"><rect x="12" y="26" width="20" height="4" rx="2" fill="#c2c0b8" opacity=".45"/><circle class="e-coin" cx="22" cy="10" r="6" fill="#e0916a"/></svg>
         </article>
@@ -1095,7 +1098,7 @@
           <span class="role">Who earns rewards</span>
           <p>
             Decides which indexers qualify for The Graph's indexing rewards and records the
-            decision on-chain on Arbitrum. Built the service and the criteria it enforces: a
+            decisions on-chain on Arbitrum. Built the service and the criteria it enforces: a
             rolling 28-day window counting days an indexer served queries meeting published
             thresholds for response status, latency and freshness. Took it to production with RPC
             failover, gas bounds, a circuit breaker, and Slack and Opsgenie alerting.
@@ -1112,10 +1115,10 @@
           <span class="role">Receiving side</span>
           <p>
             The service indexers run to receive, verify and answer agreement proposals over gRPC.
-            Wrote 25 of the 26 changes merged to its DIPs code between January and August 2026.
-            Rebuilt the trust model: proposals are now attributed to whoever actually signed them
-            and accepted only if that signer is on the protocol's on-chain list of approved
-            payers, rather than trusting a sender field anyone could fill in.
+            Wrote 25 of 26 changes merged to its DIPs code from January to August 2026. Rebuilt the
+            trust model: proposals are attributed to whoever actually signed them and accepted only
+            if that signer is on the protocol's on-chain list of approved payers, not a sender field
+            anyone could fill in.
           </p>
           <svg class="egg" viewBox="0 0 44 34"><g class="e-mail"><rect x="10" y="9" width="24" height="16" rx="2" fill="none" stroke="#e0916a" stroke-width="2"/><path d="M10 11 22 19 34 11" fill="none" stroke="#e0916a" stroke-width="2"/></g></svg>
         </article>
@@ -1157,18 +1160,41 @@
           </div>
           <span class="role">Off the clock</span>
           <p>
-            I run a Graph Protocol indexer on mainnet and testnet, operating the same software
-            I spent years building payment rails for, behind a fleet of chain nodes fronted
-            by a load balancer I wrote in Go, currently routing roughly 35 million RPC requests
-            a day, plus validators on crypto networks. It all runs
-            on my own Proxmox and KVM hosts with ZFS storage and automated snapshots,
-            configured through Ansible and deployed in Docker.
+            I run a Graph Protocol indexer on mainnet and testnet, the same software I spent years
+            building payment rails for, behind a fleet of 6 chain archive nodes and my Go load
+            balancer, routing roughly 35 million RPC requests daily, plus validators on crypto
+            networks. All on my own Proxmox and KVM hosts with ZFS storage, automated snapshots,
+            Ansible configuration and Docker deployment.
           </p>
-          <div class="chips node-chips">
-            <span>Graph indexer</span><span>Ethereum archive</span><span>Sepolia</span>
-            <span>Arbitrum</span><span>Arbitrum Sepolia</span><span>Avalanche</span><span>Bitcoin</span>
-          </div>
           <svg class="egg" viewBox="0 0 44 34"><rect x="8" y="7" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><rect x="8" y="19" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><circle class="e-l1" cx="13" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l2" cx="18" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l3" cx="13" cy="23" r="1.6" fill="#7fd6bb"/><circle class="e-l4" cx="18" cy="23" r="1.6" fill="#7fd6bb"/></svg>
+        </article>
+
+        <article class="card card-llm">
+          <div class="card-head">
+            <h3>LLM GPU workstation</h3>
+            <span class="lang">AI</span>
+          </div>
+          <span class="role">Off the clock</span>
+          <p>
+            I built my own at-home LLM GPU workstation that serves self-hosted open-weight
+            models with speculative decoding. I use this workstation to run some of my
+            coding-agent sessions locally, instead of against a cloud API, giving me access to
+            24/7 compute, useful for longer time horizon tasks.
+          </p>
+        </article>
+
+        <article class="card card-quant">
+          <div class="card-head">
+            <h3>Options data pipeline</h3>
+            <span class="lang">Quant</span>
+          </div>
+          <span class="role">Off the clock</span>
+          <p>
+            I run my own stock options data collection pipeline, tracking options prices for
+            over 100,000 options contracts covering stocks in the S&amp;P 500. This pipeline's
+            goal is to investigate profitable trading strategies around selling volatility risk
+            premium from a quantitative analysis perspective.
+          </p>
         </article>
 
         <article class="card card-sol">
@@ -1196,13 +1222,12 @@
           </div>
           <span class="role">Bridging</span>
           <p>
-            Worked with <a class="chainlink" href="https://chain.link"><svg viewBox="0 0 37.8 43.6" aria-hidden="true"><path d="M18.9 0l-4 2.3L4.1 8.6 0 10.9v21.8l4.1 2.3 10.9 6.3 4 2.3 4-2.3 10.7-6.3 4.1-2.3V10.9l-4.1-2.3L23 2.3 18.9 0zM8.1 28.1V15.5l10.8-6.2 10.8 6.2v12.6l-10.8 6.2-10.8-6.2z"/></svg>Chainlink</a>'s team to integrate GRT with CCIP for The Graph's cross-chain
-            token launch, and pushed for Avalanche as a supported chain. Deployed GRT on Base
-            with a risk assessment approved by The Graph's council. Built the bridge monitoring
-            the council required: it checks CCIP rate-limiter capacity across Base, Avalanche,
-            Arbitrum and Solana every 5 minutes and pages on-call responders when capacity runs
-            low or something looks anomalous. Also scoped the smart contracts for delegating
-            GRT across chains.
+            Worked with <a class="chainlink" href="https://chain.link"><svg viewBox="0 0 37.8 43.6" aria-hidden="true"><path d="M18.9 0l-4 2.3L4.1 8.6 0 10.9v21.8l4.1 2.3 10.9 6.3 4 2.3 4-2.3 10.7-6.3 4.1-2.3V10.9l-4.1-2.3L23 2.3 18.9 0zM8.1 28.1V15.5l10.8-6.2 10.8 6.2v12.6l-10.8 6.2-10.8-6.2z"/></svg>Chainlink</a>
+            to integrate GRT with CCIP for The Graph's cross-chain token launch and pushed for
+            Avalanche support. Deployed GRT on Base with a council-approved risk assessment. Built
+            the council-required bridge monitor: every 5 minutes it checks CCIP rate-limiter
+            capacity across Base, Avalanche, Arbitrum and Solana, paging on-call when capacity runs
+            low or looks anomalous. Scoped contracts for delegating GRT across chains.
           </p>
           <svg class="egg" viewBox="0 0 48 34"><circle cx="10" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle cx="38" cy="24" r="6" fill="none" stroke="#7ab8e0" stroke-width="2"/><circle class="e-hop" cx="10" cy="24" r="3" fill="#7ab8e0"/></svg>
         </article>
@@ -1339,15 +1364,25 @@
       const moon = document.querySelector('.moon');
       const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
       let clicks = 0;
+      // A toast takes the phase caption's place under the moon, and the caption fades out
+      // until the last toast has gone, so the 2 never sit on top of each other.
+      const caption = document.querySelector('.moon-phase');
+      let toastsShowing = 0;
       const toast = (msg) => {
         const t = document.createElement('div');
         t.className = 'moon-toast';
         t.textContent = msg;
-        const r = moon.getBoundingClientRect();
-        t.style.top = (r.bottom + 10) + 'px';
-        t.style.right = Math.max(8, innerWidth - r.right) + 'px';
         document.body.appendChild(t);
-        t.addEventListener('animationend', () => t.remove());
+        const r = moon.getBoundingClientRect();
+        const c = caption.getBoundingClientRect();
+        t.style.top = (c.top + (c.height - t.offsetHeight) / 2) + 'px';
+        t.style.right = Math.max(8, innerWidth - r.right) + 'px';
+        toastsShowing++;
+        caption.classList.add('hushed');
+        t.addEventListener('animationend', () => {
+          t.remove();
+          if (--toastsShowing === 0) caption.classList.remove('hushed');
+        });
       };
       moon.addEventListener('click', () => {
         clicks++;

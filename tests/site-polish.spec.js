@@ -33,11 +33,12 @@ test.describe('wide screen with a mouse', () => {
     await expect(embedded.locator('header')).toBeVisible();
     await expect(embedded.locator('.legend')).toBeVisible();
     await expect(embedded.locator('.ticker')).toBeVisible();
-    // The page is laid out 1,200px wide and scaled to the box, so its edges line up with it.
-    const box = await page.locator('.featured-map').boundingBox();
+    // The page is laid out 1,200px wide and scaled to the box, so its edges line up with the
+    // inside of the box's 1px border.
+    const box = await page.locator('.featured-map').evaluate((el) => ({ width: el.clientWidth, height: el.clientHeight }));
     const shown = await frame.boundingBox();
-    expect(Math.abs(shown.width - box.width)).toBeLessThan(2);
-    expect(Math.abs(shown.height - box.height)).toBeLessThan(2);
+    expect(Math.abs(shown.width - box.width)).toBeLessThan(1);
+    expect(Math.abs(shown.height - box.height)).toBeLessThan(1);
     // The frame is sized after boot, so the map must stay centred in it.
     const mapFrame = page.frames().find((f) => f.url().includes('embed'));
     await page.setViewportSize({ width: 1600, height: 900 });
