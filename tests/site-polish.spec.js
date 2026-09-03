@@ -33,11 +33,12 @@ test.describe('wide screen with a mouse', () => {
     await expect(embedded.locator('header')).toBeVisible();
     await expect(embedded.locator('.legend')).toBeVisible();
     await expect(embedded.locator('.ticker')).toBeVisible();
-    // The page is laid out 1,200px wide and scaled to the box, so its edges line up with it.
-    const box = await page.locator('.featured-map').boundingBox();
+    // The page is laid out 1,200px wide and scaled to the box, so its edges line up with the
+    // inside of the box's 1px border.
+    const box = await page.locator('.featured-map').evaluate((el) => ({ width: el.clientWidth, height: el.clientHeight }));
     const shown = await frame.boundingBox();
-    expect(Math.abs(shown.width - box.width)).toBeLessThan(2);
-    expect(Math.abs(shown.height - box.height)).toBeLessThan(2);
+    expect(Math.abs(shown.width - box.width)).toBeLessThan(1);
+    expect(Math.abs(shown.height - box.height)).toBeLessThan(1);
     // The frame is sized after boot, so the map must stay centred in it.
     const mapFrame = page.frames().find((f) => f.url().includes('embed'));
     await page.setViewportSize({ width: 1600, height: 900 });
@@ -79,5 +80,20 @@ test.describe('phone', () => {
     await picture.scrollIntoViewIfNeeded();
     await expect(picture).toBeVisible();
     await expect(page.locator('.featured-map iframe')).toHaveCount(0);
+  });
+});
+
+test.describe('open-to-work badge', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
+  test('copies the email address and says so for a moment', async ({ page }) => {
+    await page.goto(url);
+    const badge = page.locator('.available');
+    const original = await badge.textContent();
+    await badge.click();
+    const address = 'contact@samuelmetcalfe.com';
+    await expect(badge).toContainText(address);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(address);
+    await expect(badge).toHaveText(original, { timeout: 5000 });
   });
 });
