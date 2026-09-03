@@ -317,6 +317,16 @@
     animation: fadeup .9s ease-out .5s both;
   }
   .bio + .bio { margin-top: 1rem; }
+  .edu {
+    margin-top: .9rem;
+    font-size: .92rem;
+    color: var(--moonlight-dim);
+    animation: fadeup .9s ease-out .55s both;
+  }
+  .edu .deg { color: var(--ice); font-weight: 700; }
+  @media (min-width: 44rem) {
+    .edu .qual { white-space: nowrap; }
+  }
   .contact-row {
     margin-top: 2rem;
     display: flex;
@@ -929,8 +939,8 @@
     .stars, .aurora, .moon, .moon-phase, .nav-links, .egg, .chip-tip, .stat-tip, .to-top,
     .available::before, .contact-row button, #contact { display: none !important; }
     .card, .stat, .stats, .featured, .chips span, .available { background: #fff !important; box-shadow: none !important; border-color: #bbb !important; }
-    h1, h2, .card-head h3, .stat b { color: #000 !important; }
-    .tagline, .bio, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
+    h1, h2, .card-head h3, .stat b, .edu .deg { color: #000 !important; }
+    .tagline, .bio, .edu, .card p, .section-note, .elsewhere-list li, .stat small, .featured-text p { color: #222 !important; }
     .kicker, .nav-name, .role, .lang, .num, .featured .cta { color: #555 !important; }
     .available { color: #000 !important; }
     .chips span { color: #333 !important; }
@@ -988,6 +998,7 @@
         My work then moved from research to engineering to build out more of the Direct
         Indexing Payments (DIPs) stack.
       </p>
+      <p class="edu"><span class="qual"><span class="deg">MSc Financial Technology</span> (1st Class Hons.), University of Exeter</span> &middot; <span class="qual"><span class="deg">BSc Financial Mathematics</span>, University of Kent</span></p>
       <div class="contact-row">
         <a href="https://github.com/MoonBoi9001">GitHub</a>
         <a class="linkedin-link" href="#">LinkedIn</a>
