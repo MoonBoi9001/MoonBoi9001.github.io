@@ -262,7 +262,7 @@
   /* On phones the moon and its caption sit above the header, so push the name below them. */
   @media (max-width: 44rem) {
     header { padding-top: 6rem; }
-    .bio { text-align: left; }
+    .bio, .card p { text-align: left; }
   }
   h1 {
     cursor: pointer;
@@ -715,6 +715,7 @@
   .wide { grid-column: 1 / -1; }
   .card p {
     font-size: 1rem;
+    text-align: justify;
     color: var(--moonlight-dim);
   }
 
