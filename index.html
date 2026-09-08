@@ -42,7 +42,11 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; font-size: 112.5%; }
+  /* overflow-x on the root as well as body: with it only on body, the value propagates to
+     the viewport and mobile browsers still widen the layout viewport to fit anything that
+     pokes past the right edge (the flagship card's crack overlay), which zooms the whole
+     page out and leaves a bare strip down the side. */
+  html { scroll-behavior: smooth; font-size: 112.5%; overflow-x: hidden; }
 
   body {
     background-color: var(--night-deep);
