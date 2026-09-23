@@ -726,7 +726,6 @@
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
-  .card-llm { --card-accent: #e0c36a; }
   .card-quant { --card-accent: #9ad07a; }
   a.chainlink {
     color: #7d9bf0;
@@ -763,7 +762,8 @@
     color: var(--moonlight);
     transition: border-color .25s, transform .25s, box-shadow .25s;
   }
-  .featured:hover {
+  /* Only a panel that is a link lifts on hover; the workstation panel is not one */
+  a.featured:hover {
     border-color: color-mix(in srgb, var(--accent) 55%, transparent);
     transform: translateY(-3px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
@@ -771,7 +771,7 @@
   }
   .featured-map {
     position: relative;
-    width: 38%;
+    flex: 0 0 30%;
     min-width: 200px;
     border-radius: 8px;
     border: 1px solid var(--edge);
@@ -797,9 +797,34 @@
     font-size: .8rem;
     color: var(--accent);
   }
+  .featured-photo {
+    flex: 0 0 30%;
+    min-width: 200px;
+    align-self: flex-start;
+    border-radius: 8px;
+    border: 1px solid var(--edge);
+    overflow: hidden;
+    background: #0e1120;
+    aspect-ratio: 800 / 777;
+  }
+  .featured-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .specs {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: .35rem 1rem;
+    margin-top: .9rem;
+    font-size: .9rem;
+    color: var(--moonlight-dim);
+  }
+  .specs dt {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--accent);
+    padding-top: .1rem;
+  }
   @media (max-width: 44rem) {
     .featured { flex-direction: column; }
-    .featured-map { width: 100%; min-width: 0; }
+    .featured-map, .featured-photo { flex: none; width: 100%; min-width: 0; }
   }
   .elsewhere-list { list-style: none; }
   .elsewhere-list li {
@@ -1194,19 +1219,6 @@
           <svg class="egg" viewBox="0 0 44 34"><rect x="8" y="7" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><rect x="8" y="19" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><circle class="e-l1" cx="13" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l2" cx="18" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l3" cx="13" cy="23" r="1.6" fill="#7fd6bb"/><circle class="e-l4" cx="18" cy="23" r="1.6" fill="#7fd6bb"/></svg>
         </article>
 
-        <article class="card card-llm">
-          <div class="card-head">
-            <h3>LLM GPU workstation</h3>
-          </div>
-          <span class="role">Off the clock &middot; AI</span>
-          <p>
-            I built my own at-home LLM GPU workstation that serves self-hosted open-weight
-            models with speculative decoding. I use this workstation to run some of my
-            coding-agent sessions locally, instead of against a cloud API. This gives me access
-            to 24/7 compute, which is useful for tasks with longer time horizons.
-          </p>
-        </article>
-
         <article class="card card-quant">
           <div class="card-head">
             <h3>Options data pipeline</h3>
@@ -1270,6 +1282,28 @@
           <span class="cta">Explore the map &rarr;</span>
         </div>
       </a>
+
+      <div class="featured">
+        <div class="featured-photo">
+          <img src="workstation.webp" width="800" height="777" loading="lazy"
+               alt="My LLM GPU workstation: 2 RTX 3090 Ti graphics cards and a Ryzen 9 5950X in a white NZXT H9 Flow case, lit by its fans">
+        </div>
+        <div class="featured-text">
+          <h3>LLM GPU workstation</h3>
+          <p>I built my own at-home LLM GPU workstation that serves self-hosted open-weight
+          models with speculative decoding. I use this workstation to run some of my
+          coding-agent sessions locally, instead of against a cloud API. This gives me access
+          to 24/7 compute, which is useful for tasks with longer time horizons.</p>
+          <dl class="specs">
+            <dt>GPUs</dt><dd>2x RTX 3090 Ti (Founders Edition and Zotac AMP Extreme), 48 GB VRAM</dd>
+            <dt>CPU</dt><dd>AMD Ryzen 9 5950X</dd>
+            <dt>Memory</dt><dd>64 GB DDR4-3600</dd>
+            <dt>Board</dt><dd>ASUS X570-F</dd>
+            <dt>Power</dt><dd>EVGA SuperNOVA 1600 G2</dd>
+            <dt>Case</dt><dd>NZXT H9 Flow</dd>
+          </dl>
+        </div>
+      </div>
 
       <ul class="elsewhere-list">
         <li>
