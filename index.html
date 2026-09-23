@@ -449,6 +449,8 @@
     color: var(--moonlight-dim);
     margin-bottom: 2rem;
   }
+  /* A section with no note keeps the same 2rem gap between its heading and its content */
+  .section-head + :not(.section-note) { margin-top: 1.6rem; }
 
   /* ---- work grid ---- */
   .work-grid {
@@ -1052,7 +1054,6 @@
 
     <section id="work">
       <div class="section-head"><span class="num">01</span><h2>Selected work</h2></div>
-      <p class="section-note">The indexing payments stack on The Graph, end to end.</p>
 
       <div class="work-grid">
         <div class="flagship-slot">
