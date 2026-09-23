@@ -1294,14 +1294,20 @@
           <p>I built my own at-home LLM GPU workstation that serves self-hosted open-weight
           models with speculative decoding. I use this workstation to run some of my
           coding-agent sessions locally, instead of against a cloud API. This gives me access
-          to 24/7 compute, which is useful for tasks with longer time horizons.</p>
+          to 24/7 compute, which is useful for tasks with longer time horizons. The whole setup,
+          from the GPU driver to the model weights, is pinned and deployed with Ansible.</p>
           <dl class="specs">
             <dt>GPUs</dt><dd>2x RTX 3090 Ti (Founders Edition and Zotac AMP Extreme), 48 GB VRAM</dd>
             <dt>CPU</dt><dd>AMD Ryzen 9 5950X</dd>
             <dt>Memory</dt><dd>64 GB DDR4-3600</dd>
-            <dt>Board</dt><dd>ASUS X570-F</dd>
+            <dt>Board</dt><dd>ASUS ROG Strix X570-F Gaming</dd>
             <dt>Power</dt><dd>EVGA SuperNOVA 1600 G2</dd>
             <dt>Case</dt><dd>NZXT H9 Flow</dd>
+            <dt>Model</dt><dd>Qwen3.8-27B, lued's INT8 W8A16 quantisation</dd>
+            <dt>Serving</dt><dd>vLLM, tensor parallel across both GPUs, MTP speculative decoding</dd>
+            <dt>Context</dt><dd>262,144 tokens, FP8 KV cache</dd>
+            <dt>Speed</dt><dd>About 105 tokens/s on a 10,000-token essay benchmark</dd>
+            <dt>Tuning</dt><dd>Resizable BAR, IOMMU passthrough, GPU peer-to-peer via a patched NVIDIA driver</dd>
           </dl>
         </div>
       </div>
