@@ -1672,11 +1672,12 @@
         shatter.addEventListener('animationend', (e) => {
           if (e.animationName === 'shatter-fade') shatter.classList.remove('on');
         });
+        // Wait until most of the card is on screen, so the drop isn't half spent below the fold.
         const watcher = new IntersectionObserver((entries) => {
-          if (!entries.some((e) => e.isIntersecting)) return;
+          if (!entries.some((e) => e.intersectionRatio >= .6)) return;
           watcher.disconnect();
           setTimeout(() => card.classList.add('dropping'), 350);
-        }, { threshold: .4 });
+        }, { threshold: .6 });
         watcher.observe(card);
       }
       if (!calm && 'IntersectionObserver' in window) {

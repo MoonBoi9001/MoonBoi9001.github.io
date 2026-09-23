@@ -1,7 +1,6 @@
-// The flagship card on the home page drops in from above and cracks the ground when it
-// scrolls into view, but only on a wide screen driven by a mouse. These checks pin down
-// both halves: the animation runs and cleans up after itself where it should, and it never
-// arms on phones or for people who asked the browser for reduced motion.
+// The flagship card drops in and cracks the ground when it scrolls into view, but only on a
+// wide screen driven by a mouse. These checks cover both halves: it runs and cleans up where it
+// should, and never arms on phones or for people who asked for reduced motion.
 const { test, expect, devices } = require('@playwright/test');
 const path = require('path');
 
@@ -45,6 +44,25 @@ test.describe('wide screen with a mouse', () => {
 
     const [cardBox, slotBox] = await Promise.all([card.boundingBox(), slot.boundingBox()]);
     expect(cardBox).toEqual(slotBox);
+  });
+
+  test('waits until 60% of the card is on screen before dropping', async ({ page }) => {
+    await page.goto(page_url);
+    const card = page.locator('.card-flagship');
+    // Scroll so only the given share of the card sits above the bottom of the screen.
+    const showShare = (share) => page.evaluate((s) => {
+      const el = document.querySelector('.card-flagship');
+      const r = el.getBoundingClientRect();
+      scrollBy(0, r.top - innerHeight + r.height * s);
+    }, share);
+
+    await showShare(.5);
+    await page.waitForTimeout(800);
+    await expect(card).toHaveClass(/drop-armed/);
+    await expect(card).not.toHaveClass(/dropping/);
+
+    await showShare(.7);
+    await expect(card).toHaveClass(/dropping/);
   });
 
   test('never arms when the browser asks for reduced motion', async ({ browser }) => {
