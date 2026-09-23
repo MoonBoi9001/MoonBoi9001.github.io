@@ -728,7 +728,6 @@
   .card-sol { --card-accent: var(--lavender); }
   .card-infra { --card-accent: var(--teal); }
   .card-ccip { --card-accent: #7ab8e0; }
-  .card-quant { --card-accent: #9ad07a; }
   a.chainlink {
     color: #7d9bf0;
     font-weight: 500;
@@ -807,9 +806,9 @@
     border: 1px solid var(--edge);
     overflow: hidden;
     background: #0e1120;
-    aspect-ratio: 1276 / 1238;
   }
-  .featured-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* Each picture's width and height attributes reserve its space before it lazily loads */
+  .featured-photo img { display: block; width: 100%; height: auto; }
   .specs {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -1220,19 +1219,6 @@
           <svg class="egg" viewBox="0 0 44 34"><rect x="8" y="7" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><rect x="8" y="19" width="28" height="8" rx="2" fill="none" stroke="#7fd6bb" stroke-width="1.5"/><circle class="e-l1" cx="13" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l2" cx="18" cy="11" r="1.6" fill="#7fd6bb"/><circle class="e-l3" cx="13" cy="23" r="1.6" fill="#7fd6bb"/><circle class="e-l4" cx="18" cy="23" r="1.6" fill="#7fd6bb"/></svg>
         </article>
 
-        <article class="card card-quant">
-          <div class="card-head">
-            <h3>Options data pipeline</h3>
-          </div>
-          <span class="role">Off the clock &middot; Quant</span>
-          <p>
-            I run my own stock options data collection pipeline, tracking prices for
-            over 100,000 options contracts covering stocks in the S&amp;P 500. This pipeline's
-            goal is to investigate profitable trading strategies around selling volatility risk
-            premium from a quantitative analysis perspective.
-          </p>
-        </article>
-
         <article class="card card-sol">
           <div class="card-head">
             <h3>Smart contracts &amp; security</h3>
@@ -1309,6 +1295,20 @@
             <dt>Speed</dt><dd>About 105 tokens/s on a 10,000-token essay benchmark</dd>
             <dt>Tuning</dt><dd>Resizable BAR, IOMMU passthrough, GPU peer-to-peer via a patched NVIDIA driver</dd>
           </dl>
+        </div>
+      </div>
+
+      <div class="featured">
+        <div class="featured-photo">
+          <img src="options-dashboard.webp" width="1600" height="1015" loading="lazy"
+               alt="My IV Collector dashboard, plotting the implied volatility of TSLA calls and puts against strike price for options expiring 2026-10-30">
+        </div>
+        <div class="featured-text">
+          <h3>Options data pipeline</h3>
+          <p>I run my own stock options data collection pipeline, tracking prices for
+          over 100,000 options contracts covering stocks in the S&amp;P 500. This pipeline's
+          goal is to investigate profitable trading strategies around selling volatility risk
+          premium from a quantitative analysis perspective.</p>
         </div>
       </div>
 
