@@ -123,6 +123,15 @@
     padding: 1.2rem;
   }
   .diagram svg { display: block; width: 100%; height: auto; }
+  /* Read out by screen readers but not drawn on screen. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   footer {
     margin-top: 5rem;
     padding-top: 1.6rem;
@@ -179,8 +188,8 @@
       traffic itself.
     </p>
 
-    <div class="diagram">
-      <svg viewBox="0 0 720 300" role="img" aria-label="Network diagram: internet to modem to firewall, which serves DNS, VPN and the LAN switch with wired hosts and Wi-Fi clients behind it">
+    <figure class="diagram">
+      <svg viewBox="0 0 720 300" aria-hidden="true">
         <defs>
           <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 10 z" fill="#7fd6bb"/>
@@ -222,7 +231,8 @@
         <line class="flow" x1="600" y1="150" x2="625" y2="150"/>
         <line class="flow" x1="600" y1="160" x2="625" y2="230"/>
       </svg>
-    </div>
+      <figcaption class="visually-hidden">Network diagram: internet to modem to firewall, which serves DNS, VPN and the LAN switch with wired hosts and Wi-Fi clients behind it</figcaption>
+    </figure>
 
     <h2><span class="num">02</span>The firewall posture</h2>
     <p>
