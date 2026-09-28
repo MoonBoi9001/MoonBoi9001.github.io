@@ -106,8 +106,8 @@
       inset -14px -10px 30px rgba(60, 62, 80, .35);
     animation: rise 2.2s cubic-bezier(.22,1,.36,1) both;
     transition: box-shadow .6s, transform .6s;
+    overflow: hidden;
   }
-  .moon { overflow: hidden; }
   .moon-phase {
     position: absolute;
     z-index: 1;
@@ -262,7 +262,6 @@
     padding: clamp(3rem, 9vh, 6rem) 0 0;
     max-width: 66rem;
   }
-  .tagline { max-width: 50rem; }
   /* On phones the moon and its caption sit above the header, so push the name below them. */
   @media (max-width: 44rem) {
     header { padding-top: 6rem; }
@@ -279,6 +278,7 @@
     animation: fadeup .9s ease-out .15s both;
   }
   .tagline {
+    max-width: 50rem;
     margin-top: 1.1rem;
     font-size: 1.12rem;
     animation: fadeup .9s ease-out .3s both;
@@ -386,10 +386,9 @@
   @media (max-width: 40rem) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .stat:nth-child(-n + 4) { grid-column: span 1; }
-    .stat:last-child { grid-column: 1 / -1; }
     .stat:nth-child(2) { border-radius: 0 11px 0 0; }
     .stat:nth-child(3), .stat:nth-child(4) { border-radius: 0; }
-    .stat:last-child { border-radius: 0 0 11px 11px; }
+    .stat:last-child { grid-column: 1 / -1; border-radius: 0 0 11px 11px; }
   }
   @media (max-width: 28rem) {
     .stats { grid-template-columns: 1fr; }
@@ -464,18 +463,19 @@
   @media (max-width: 44rem) {
     .work-grid { grid-template-columns: 1fr; }
   }
-  .card { --card-accent: var(--accent); }
-  .card-rust   { --card-accent: #e0916a; }
-  .card-python { --card-accent: var(--ice); }
-  .card-ts     { --card-accent: #6ea8dc; }
-  .card-asc    { --card-accent: var(--lavender); }
   .card {
+    --card-accent: var(--accent);
+    position: relative;
     border: 1px solid var(--edge);
     border-radius: 12px;
     background: var(--panel);
     padding: 1.4rem 1.5rem;
     transition: border-color .25s, transform .25s, box-shadow .25s;
   }
+  .card-rust   { --card-accent: #e0916a; }
+  .card-python { --card-accent: var(--ice); }
+  .card-ts     { --card-accent: #6ea8dc; }
+  .card-asc    { --card-accent: var(--lavender); }
   .card:hover {
     border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
     transform: translateY(-3px);
@@ -684,7 +684,6 @@
     from { transform: scale(1); opacity: .85; }
     to { transform: scale(1.5); opacity: 0; }
   }
-  .card { position: relative; }
   .egg {
     position: absolute;
     right: 1.1rem;
@@ -837,9 +836,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: .7rem;
+    --chip: var(--moonlight);
   }
-  .chips { --chip: var(--moonlight); }
-  .chips > span { position: relative; }
   .chip-tip, .stat-tip {
     position: absolute;
     bottom: calc(100% + 10px);
@@ -884,6 +882,7 @@
     .chip-tip { max-width: 14rem; }
   }
   .chips > span {
+    position: relative;
     font-family: var(--mono);
     font-size: .78rem;
     letter-spacing: .05em;
