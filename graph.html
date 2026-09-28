@@ -622,20 +622,28 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         if (EMBED && now - last < 30) { schedule(); return; }
         const dt = Math.min(now - last, 60); last = now;
         window.__mapFrames = (window.__mapFrames || 0) + 1;
-        if (camTarget) {
-          cam.x += (camTarget.x - cam.x) * 0.12;
-          cam.y += (camTarget.y - cam.y) * 0.12;
-          cam.scale += (camTarget.scale - cam.scale) * 0.12;
-          if (Math.abs(camTarget.scale - cam.scale) < 0.001 && Math.abs(camTarget.x - cam.x) < 0.5) camTarget = null;
-        }
+        easeCamera();
         spawnParticles(dt);
         ctx.clearRect(0, 0, W, H);
         ctx.fillStyle = '#0a0b14'; ctx.fillRect(0, 0, W, H);
         drawGrid();
-
         const focusSet = focusNodes();
-
-        // edges
+        drawEdges(focusSet);
+        drawParticles(dt);
+        // nodes — draw bodies first, then labels in a second pass so text is never
+        // covered by a neighbouring circle.
+        drawLabels(drawNodes(focusSet));
+        schedule();
+      }
+      // Glide the camera a step towards the spot it is flying to, and stop once it is close.
+      function easeCamera() {
+        if (!camTarget) return;
+        cam.x += (camTarget.x - cam.x) * 0.12;
+        cam.y += (camTarget.y - cam.y) * 0.12;
+        cam.scale += (camTarget.scale - cam.scale) * 0.12;
+        if (Math.abs(camTarget.scale - cam.scale) < 0.001 && Math.abs(camTarget.x - cam.x) < 0.5) camTarget = null;
+      }
+      function drawEdges(focusSet) {
         DATA.edges.forEach((e) => {
           if (!edgeVisible(e)) return;
           const g = edgeGeo(e);
@@ -650,8 +658,8 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.stroke();
           ctx.setLineDash([]);
         });
-
-        // particles
+      }
+      function drawParticles(dt) {
         for (let i = particles.length - 1; i >= 0; i--) {
           const p = particles[i];
           if (p.delay && p.delay > 0) { p.delay -= dt; continue; }
@@ -670,9 +678,8 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.fill();
           ctx.shadowBlur = 0; ctx.globalAlpha = 1;
         }
-
-        // nodes — draw bodies first, then labels in a second pass so text is never
-        // covered by a neighbouring circle.
+      }
+      function drawNodes(focusSet) {
         const labelJobs = [];
         nodes.forEach((nd) => {
           if (!isVisible(nd.ref)) return;
@@ -707,8 +714,11 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.globalAlpha = 1;
           if (cam.scale > 0.34 || isSel || isHov || nd.act > 0.1) labelJobs.push({ nd, s, r, dimmed, isSel, isHov });
         });
-        // label pass — fan each label radially outward from its district centre,
-        // with a dark pill behind it; draw focused/hovered last so they sit on top.
+        return labelJobs;
+      }
+      // label pass — fan each label radially outward from its district centre,
+      // with a dark pill behind it; draw focused/hovered last so they sit on top.
+      function drawLabels(labelJobs) {
         labelJobs.sort((a, b) => (a.isSel || a.isHov ? 1 : 0) - (b.isSel || b.isHov ? 1 : 0));
         labelJobs.forEach(({ nd, s, r, dimmed, isSel, isHov }) => {
           const fs = Math.max(11, 12.5 * Math.min(cam.scale, 1.25));
@@ -732,7 +742,6 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.fillText(label, lx, ly);
           ctx.globalAlpha = 1;
         });
-        schedule();
       }
       function roundRect(x, y, w, h, rad) {
         ctx.beginPath();
