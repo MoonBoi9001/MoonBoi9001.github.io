@@ -97,3 +97,34 @@ test.describe('open-to-work badge', () => {
     await expect(badge).toHaveText(original, { timeout: 5000 });
   });
 });
+
+test.describe('email reveal button', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
+  test('shows the address as a link with a copy button that copies it', async ({ page }) => {
+    await page.goto(url);
+    await page.locator('.email-reveal').first().click();
+    const address = 'contact@samuelmetcalfe.com';
+    const link = page.locator(`a[href="mailto:${address}"]`).first();
+    await expect(link).toHaveText(address);
+    const copy = link.locator('xpath=following-sibling::button[1]');
+    await copy.click();
+    await expect(copy).toHaveText('Copied');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(address);
+  });
+});
+
+test.describe('moon lander', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  // The flight takes 2.6s, the lander rests for 2.4s, then fades out over 1.3s.
+  test('flies to the moon, fades away, then can fly again', async ({ page }) => {
+    await page.goto(url);
+    const lander = page.locator('.lander');
+    await page.locator('.nav-name').click();
+    await expect(lander).toHaveCount(1);
+    await expect(lander).toHaveCount(0, { timeout: 10000 });
+    await page.locator('.nav-name').click();
+    await expect(lander).toHaveCount(1);
+  });
+});
