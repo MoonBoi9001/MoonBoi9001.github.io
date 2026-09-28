@@ -645,7 +645,8 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
           ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(c.x, c.y, b.x, b.y);
           ctx.lineWidth = inFocus ? 2 : 1;
           ctx.setLineDash(e.kind === 'registry' ? [3, 5] : []);
-          ctx.strokeStyle = inFocus ? hexA(nodeMap[e.from].color, 0.7) : (focusSet ? 'rgba(80,86,128,0.10)' : 'rgba(90,96,138,0.20)');
+          if (inFocus) ctx.strokeStyle = hexA(nodeMap[e.from].color, 0.7);
+          else ctx.strokeStyle = focusSet ? 'rgba(80,86,128,0.10)' : 'rgba(90,96,138,0.20)';
           ctx.stroke();
           ctx.setLineDash([]);
         });
@@ -1028,6 +1029,8 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         return `<div class="fn-doc">${parts.join('')}</div>`;
       }
 
+      // Badge colour for a function's state mutability; pure reads share the view colour.
+      const MUT_CLASS = { payable: 'payable', view: 'view', pure: 'view' };
       function renderList() {
         const r = nodesById[selected];
         const list = document.getElementById('pList');
@@ -1062,7 +1065,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         const items = arr.filter((f) => f.name.toLowerCase().includes(q) || f.sig.toLowerCase().includes(q) || ((f.doc && f.doc.notice) || '').toLowerCase().includes(q));
         if (!items.length) { list.innerHTML = `<div class="empty">No ${activeTab} functions match.</div>`; return; }
         list.innerHTML = items.map((f) => {
-          const mut = f.mut === 'payable' ? 'payable' : (f.mut === 'view' || f.mut === 'pure') ? 'view' : 'nonpayable';
+          const mut = MUT_CLASS[f.mut] || 'nonpayable';
           return `<div class="fn clickable" data-key="${esc(f.sig)}" data-fn="${esc(f.name)}">
             <div class="fn-top">
               <span class="fn-name">${esc(f.name)}${isGated(f)?'<span class="lock" title="role-restricted">🔒</span>':''}</span>
