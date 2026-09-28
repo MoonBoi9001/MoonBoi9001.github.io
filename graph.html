@@ -1054,8 +1054,9 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         return `<div class="params ret">→ ${values.join(', ')}</div>`;
       }
 
-      // Badge colour for a function's state mutability; pure reads share the view colour.
-      const MUT_CLASS = { payable: 'payable', view: 'view', pure: 'view' };
+      // Badge colour for a function's state mutability; pure reads share the view colour. No
+      // prototype, so a name like "toString" falls through to the default instead of matching.
+      const MUT_CLASS = { __proto__: null, payable: 'payable', view: 'view', pure: 'view' };
       function renderList() {
         const r = nodesById[selected];
         const list = document.getElementById('pList');
