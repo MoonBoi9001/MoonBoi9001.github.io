@@ -117,13 +117,18 @@ test.describe('email reveal button', () => {
 test.describe('moon lander', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  // The flight takes 2.6s, the lander rests for 2.4s, then fades out over 1.3s.
+  // The flight takes 2.6s, the lander rests for 2.4s, then fades out over 1.3s. The test ends
+  // the flight early and runs the page's clock through the rest, so no real waiting is needed.
   test('flies to the moon, fades away, then can fly again', async ({ page }) => {
+    await page.clock.install();
     await page.goto(url);
     const lander = page.locator('.lander');
     await page.locator('.nav-name').click();
     await expect(lander).toHaveCount(1);
-    await expect(lander).toHaveCount(0, { timeout: 10000 });
+    await lander.evaluate((el) => el.getAnimations().forEach((a) => a.finish()));
+    await expect(page.locator('.moon')).toHaveClass(/\bsuper\b/);
+    await page.clock.runFor(2400 + 1300);
+    await expect(lander).toHaveCount(0);
     await page.locator('.nav-name').click();
     await expect(lander).toHaveCount(1);
   });
