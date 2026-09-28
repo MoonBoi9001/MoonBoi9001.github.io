@@ -996,37 +996,62 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         ((f.access && f.access.mods) || []).forEach((m) => out.push(`<span class="acc-badge mod">${esc(MOD_LABELS[m] || m)}</span>`));
         return out;
       }
-      // The deep view for one function/event: NatSpec, params, returns, access.
-      function fnDocHtml(f, kind) {
-        const parts = [];
-        if (f.doc && f.doc.notice) parts.push(`<div class="notice">${esc(f.doc.notice)}</div>`);
-        if (f.doc && f.doc.details) parts.push(`<div class="details">${esc(f.doc.details)}</div>`);
-        if (f.inputs && f.inputs.length) {
-          parts.push(`<div class="sec">Parameters</div>`);
-          parts.push(f.inputs.map((i) => {
-            const d = f.doc && f.doc.params && f.doc.params[i.name];
-            return `<div class="param-row"><code class="type" data-type="${esc(i.type)}">${esc(i.type)}</code> <span class="pname">${esc(i.name || '—')}</span>${d ? ` — <span class="pdesc">${esc(d)}</span>` : ''}</div>`;
-          }).join(''));
-        }
-        if (kind !== 'events' && f.outputs && f.outputs.length) {
-          parts.push(`<div class="sec">Returns</div>`);
-          parts.push(f.outputs.map((o, idx) => {
-            const d = f.doc && f.doc.returns && (f.doc.returns[o.name] || f.doc.returns['_' + idx]);
-            return `<div class="param-row"><code class="type" data-type="${esc(o.type)}">${esc(o.type)}</code>${o.name ? ` <span class="pname">${esc(o.name)}</span>` : ''}${d ? ` — <span class="pdesc">${esc(d)}</span>` : ''}</div>`;
-          }).join(''));
-        }
+      // 1 parameter or return value in the deep view, with its name and NatSpec note when known.
+      function paramRowHtml(type, name, desc) {
+        const nameHtml = name ? ' <span class="pname">' + esc(name) + '</span>' : '';
+        const descHtml = desc ? ' — <span class="pdesc">' + esc(desc) + '</span>' : '';
+        return `<div class="param-row"><code class="type" data-type="${esc(type)}">${esc(type)}</code>${nameHtml}${descHtml}</div>`;
+      }
+      function paramsSectionHtml(f) {
+        if (!(f.inputs && f.inputs.length)) return '';
+        const params = f.doc && f.doc.params;
+        return '<div class="sec">Parameters</div>' + f.inputs.map((i) => paramRowHtml(i.type, i.name || '—', params && params[i.name])).join('');
+      }
+      function returnsSectionHtml(f) {
+        if (!(f.outputs && f.outputs.length)) return '';
+        const returns = f.doc && f.doc.returns;
+        return '<div class="sec">Returns</div>' + f.outputs.map((o, idx) => paramRowHtml(o.type, o.name, returns && (returns[o.name] || returns['_' + idx]))).join('');
+      }
+      function accessSectionHtml(f, kind) {
         if (kind === 'writes') {
           const badges = accessBadges(f);
-          parts.push(`<div class="sec">Who can call this</div>`);
-          parts.push(`<div class="access-row">${badges.length ? badges.join('') : '<span class="acc-badge open">anyone — no restriction</span>'}</div>`);
-          parts.push(`<button class="fire-btn" data-fire="${esc(f.name)}">⚡ Simulate transaction</button>`);
-        } else if (kind === 'reads') {
-          const badges = accessBadges(f);
-          if (badges.length) parts.push(`<div class="sec">Who can call this</div><div class="access-row">${badges.join('')}</div>`);
+          const who = badges.length ? badges.join('') : '<span class="acc-badge open">anyone — no restriction</span>';
+          return `<div class="sec">Who can call this</div><div class="access-row">${who}</div><button class="fire-btn" data-fire="${esc(f.name)}">⚡ Simulate transaction</button>`;
         }
-        if (!(f.doc && (f.doc.notice || f.doc.details)) && !(f.inputs && f.inputs.length) && kind === 'events')
-          parts.push(`<div class="nodoc">No NatSpec documentation in source.</div>`);
+        if (kind === 'reads') {
+          const badges = accessBadges(f);
+          if (badges.length) return `<div class="sec">Who can call this</div><div class="access-row">${badges.join('')}</div>`;
+        }
+        return '';
+      }
+      // The deep view for one function/event: NatSpec, params, returns, access.
+      function fnDocHtml(f, kind) {
+        const doc = f.doc || {};
+        const parts = [];
+        if (doc.notice) parts.push(`<div class="notice">${esc(doc.notice)}</div>`);
+        if (doc.details) parts.push(`<div class="details">${esc(doc.details)}</div>`);
+        parts.push(paramsSectionHtml(f));
+        if (kind !== 'events') parts.push(returnsSectionHtml(f));
+        parts.push(accessSectionHtml(f, kind));
+        const undocumented = !doc.notice && !doc.details && !(f.inputs && f.inputs.length);
+        if (kind === 'events' && undocumented) parts.push('<div class="nodoc">No NatSpec documentation in source.</div>');
         return `<div class="fn-doc">${parts.join('')}</div>`;
+      }
+      // The 1-line parameter summaries shown on collapsed event and function rows.
+      function eventParamsHtml(inputs) {
+        if (!inputs.length) return '<div class="params" style="color:var(--faint)">no parameters</div>';
+        const params = inputs.map((i) => (i.indexed ? '<span style="color:var(--event)">indexed </span>' : '') + esc(i.type) + ' <span class="pn">' + esc(i.name) + '</span>');
+        return `<div class="params">${params.join(',<br/>')}</div>`;
+      }
+      function fnParamsHtml(inputs) {
+        if (!inputs.length) return '<div class="params">( )</div>';
+        const params = inputs.map((i) => esc(i.type) + ' <span class="pn">' + esc(i.name) + '</span>');
+        return `<div class="params">(${params.join(', ')})</div>`;
+      }
+      function fnReturnsHtml(outputs) {
+        if (!(outputs && outputs.length)) return '';
+        const values = outputs.map((o) => esc(o.type) + (o.name ? ' ' + esc(o.name) : ''));
+        return `<div class="params ret">→ ${values.join(', ')}</div>`;
       }
 
       // Badge colour for a function's state mutability; pure reads share the view colour.
@@ -1054,7 +1079,7 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
                 <span class="fn-sp"></span>
                 <span class="caret">▶</span>
               </div>
-              ${e.inputs.length ? `<div class="params">${e.inputs.map((i)=>`${i.indexed?'<span style="color:var(--event)">indexed </span>':''}${esc(i.type)} <span class="pn">${esc(i.name)}</span>`).join(',<br/>')}</div>` : '<div class="params" style="color:var(--faint)">no parameters</div>'}
+              ${eventParamsHtml(e.inputs)}
               ${fnDocHtml(e, 'events')}
             </div>`).join('') : `<div class="empty">No events match.</div>`;
           wireExpand();
@@ -1066,16 +1091,17 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         if (!items.length) { list.innerHTML = `<div class="empty">No ${activeTab} functions match.</div>`; return; }
         list.innerHTML = items.map((f) => {
           const mut = MUT_CLASS[f.mut] || 'nonpayable';
+          const quickfire = activeTab === 'writes' ? `<span class="quickfire" title="Simulate transaction" data-fire="${esc(f.name)}">⚡</span>` : '';
           return `<div class="fn clickable" data-key="${esc(f.sig)}" data-fn="${esc(f.name)}">
             <div class="fn-top">
               <span class="fn-name">${esc(f.name)}${isGated(f)?'<span class="lock" title="role-restricted">🔒</span>':''}</span>
               <span class="fn-sp"></span>
-              ${activeTab==='writes' ? `<span class="quickfire" title="Simulate transaction" data-fire="${esc(f.name)}">⚡</span>` : ''}
+              ${quickfire}
               <span class="mut ${mut}">${f.mut}</span>
               <span class="caret">▶</span>
             </div>
-            ${f.inputs.length ? `<div class="params">(${f.inputs.map((i)=>`${esc(i.type)} <span class="pn">${esc(i.name)}</span>`).join(', ')})</div>` : '<div class="params">( )</div>'}
-            ${f.outputs && f.outputs.length ? `<div class="params ret">→ ${f.outputs.map((o)=>`${esc(o.type)}${o.name?' '+esc(o.name):''}`).join(', ')}</div>` : ''}
+            ${fnParamsHtml(f.inputs)}
+            ${fnReturnsHtml(f.outputs)}
             ${fnDocHtml(f, activeTab)}
           </div>`;
         }).join('');
@@ -1221,11 +1247,12 @@ window.__GRAPH_PROTOCOL__ = {"meta":{"branch":"deployment/testnet/2026-06-09/gip
         const r = nodesById[nodeId];
         const col = LAYERS[r.layer].color;
         const args = ev.inputs.slice(0, 3).map((i) => i.name || i.type).join(', ');
+        const argsHtml = args ? `<span class="ev-args">(${esc(args)})</span>` : '';
         return `<span class="dot" style="background:${col};box-shadow:0 0 7px ${col}"></span>
           <span class="ev-name">${esc(ev.name)}</span>
           <span class="ev-arrow">·</span>
           <span class="ev-from">${esc(r.name.replace(/ \(.*\)/,''))}</span>
-          ${args ? `<span class="ev-args">(${esc(args)})</span>` : ''}`;
+          ${argsHtml}`;
       }
       function pushEventsFor(nodeId, burst) {
         const r = nodesById[nodeId];
