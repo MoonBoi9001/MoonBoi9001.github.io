@@ -1514,6 +1514,12 @@
       })();
       const navName = document.querySelector('.nav-name');
       let landing = false;
+      // Once the lander has rested on the moon, fade it out and let it fly again.
+      const retireLander = (lander) => {
+        lander.style.transition = 'opacity 1.2s';
+        lander.style.opacity = '0';
+        setTimeout(() => { lander.remove(); landing = false; }, 1300);
+      };
       navName.addEventListener('click', () => {
         if (landing) return;
         landing = true;
@@ -1543,11 +1549,7 @@
           moon.classList.add('super');
           setTimeout(() => moon.classList.remove('super'), 900);
           toast('one small step for a boy');
-          setTimeout(() => {
-            lander.style.transition = 'opacity 1.2s';
-            lander.style.opacity = '0';
-            setTimeout(() => { lander.remove(); landing = false; }, 1300);
-          }, 2400);
+          setTimeout(() => retireLander(lander), 2400);
         };
       });
       document.getElementById('name').addEventListener('click', () => {
@@ -1575,6 +1577,14 @@
           () => show(addr, 8000)
         );
       });
+      // The copy button next to a revealed address says whether the copy worked; if not, it
+      // shows the address so it can be copied by hand.
+      const copyAddress = (button, addr) => {
+        navigator.clipboard.writeText(addr).then(
+          () => { button.textContent = 'Copied'; },
+          () => { button.textContent = addr; }
+        );
+      };
       document.querySelectorAll('.email-reveal').forEach((btn) => {
         btn.addEventListener('click', () => {
           const addr = emailAddress();
@@ -1584,12 +1594,7 @@
           const copy = document.createElement('button');
           copy.type = 'button';
           copy.textContent = 'Copy';
-          copy.addEventListener('click', () => {
-            navigator.clipboard.writeText(addr).then(
-              () => { copy.textContent = 'Copied'; },
-              () => { copy.textContent = addr; }
-            );
-          });
+          copy.addEventListener('click', () => copyAddress(copy, addr));
           btn.replaceWith(link, copy);
         }, { once: true });
       });
